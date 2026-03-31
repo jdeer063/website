@@ -783,58 +783,57 @@
             </div>
 
             <!-- Settings Page -->
-
-            <div class="settings-actions" style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin: 1rem 0;">
-                <div id="unsavedMsgTop"
-                    style="display: none; color: #f59e0b; font-size: 0.9rem; font-weight: 600; align-items: center; gap: 0.5rem; margin-right: 0.5rem;">
-                    <i class="fas fa-exclamation-circle"></i> Unsaved changes
-                </div>
-                <button class="btn btn-outline" id="changePINBtn" style="border-radius: 10px; padding: 0.7rem 1.2rem;">
-                    <i class="fas fa-key"></i> Change PIN
-                </button>
-                <button class="btn-premium-confirm" id="saveSettingsBtn"
-                    style="padding: 0.7rem 1.5rem; min-width: 160px; font-weight: 700;">
-                    <i class="fas fa-save"></i> Save Changes
-                </button>
-            </div>
-        </div>
-
-        <div class="settings-grid">
-            <!-- Residential Rates Card -->
-            <div class="rate-category-card residential">
-                <div class="rate-card-header">
-                    <div class="rate-icon-wrapper"><i class="fas fa-home"></i></div>
-                    <div class="rate-header-text">
-                        <h3>Residential</h3>
-                        <p class="rate-subtitle">Factor 1.0 - Standard household</p>
+            <div class="page" id="settingsPage">
+                <div class="settings-actions" style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin: 1rem 0;">
+                    <div id="unsavedMsgTop"
+                        style="display: none; color: #f59e0b; font-size: 0.9rem; font-weight: 600; align-items: center; gap: 0.5rem; margin-right: 0.5rem;">
+                        <i class="fas fa-exclamation-circle"></i> Unsaved changes
                     </div>
-                    <button class="btn-edit-rate" data-category="residential"><i class="fas fa-edit"></i></button>
+                    <button class="btn btn-outline" id="changePINBtn" style="border-radius: 10px; padding: 0.7rem 1.2rem;">
+                        <i class="fas fa-key"></i> Change PIN
+                    </button>
+                    <button class="btn-premium-confirm" id="saveSettingsBtn"
+                        style="padding: 0.7rem 1.5rem; min-width: 160px; font-weight: 700;">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
                 </div>
-                <div class="minimum-rate-display">
-                    <span class="rate-label">Min (0-10 cu.m.)</span>
-                    <span class="rate-amount" data-rate="residential-minimum">₱260.00</span>
-                </div>
-                <table class="rate-table">
-                    <tbody>
-                        <tr>
-                            <td>11-20</td>
-                            <td class="rate" data-rate="residential-tier1">₱27.25</td>
-                        </tr>
-                        <tr>
-                            <td>21-30</td>
-                            <td class="rate" data-rate="residential-tier2">₱28.75</td>
-                        </tr>
-                        <tr>
-                            <td>31-40</td>
-                            <td class="rate" data-rate="residential-tier3">₱30.75</td>
-                        </tr>
-                        <tr>
-                            <td>41-up</td>
-                            <td class="rate" data-rate="residential-tier4">₱33.25</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+
+                <div class="settings-grid">
+                    <!-- Residential Rates Card -->
+                    <div class="rate-category-card residential">
+                        <div class="rate-card-header">
+                            <div class="rate-icon-wrapper"><i class="fas fa-home"></i></div>
+                            <div class="rate-header-text">
+                                <h3>Residential</h3>
+                                <p class="rate-subtitle">Factor 1.0 - Standard household</p>
+                            </div>
+                            <button class="btn-edit-rate" data-category="residential"><i class="fas fa-edit"></i></button>
+                        </div>
+                        <div class="minimum-rate-display">
+                            <span class="rate-label">Min (0-10 cu.m.)</span>
+                            <span class="rate-amount" data-rate="residential-minimum">₱260.00</span>
+                        </div>
+                        <table class="rate-table">
+                            <tbody>
+                                <tr>
+                                    <td>11-20</td>
+                                    <td class="rate" data-rate="residential-tier1">₱27.25</td>
+                                </tr>
+                                <tr>
+                                    <td>21-30</td>
+                                    <td class="rate" data-rate="residential-tier2">₱28.75</td>
+                                </tr>
+                                <tr>
+                                    <td>31-40</td>
+                                    <td class="rate" data-rate="residential-tier3">₱30.75</td>
+                                </tr>
+                                <tr>
+                                    <td>41-up</td>
+                                    <td class="rate" data-rate="residential-tier4">₱33.25</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
             <!-- Commercial / Industrial Card -->
             <div class="rate-category-card full-commercial">
@@ -1014,7 +1013,8 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
+            </div> <!-- End of bulk card -->
+        </div> <!-- End of settings-grid -->
 
             <!-- Global Rules Card (Full Width) -->
             <div class="stat-card settings-card" id="globalRulesCard"
@@ -1133,10 +1133,9 @@
                 <input type="hidden" id="tier3_rate">
             </div>
 
-            <!-- Sticky footer for Unsaved Changes -->
-            <!-- Sticky footer removed as buttons moved to top -->
-        </div>
-        </div>
+            </div>
+            <!-- End settingsPage -->
+
 
         <!-- Audit Trail Page -->
         <div class="page" id="logsPage">

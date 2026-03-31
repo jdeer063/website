@@ -6561,6 +6561,82 @@ input[type='password']::-ms-clear {
     color: #10B981;
 }
 
+/* ============================================================
+   EC PREMIUM CUSTOM CHECKBOX
+   ============================================================ */
+
+.ec-checkbox-custom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    margin: 1.25rem 0;
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid transparent;
+    width: fit-content;
+}
+
+.ec-checkbox-custom:hover {
+    background: rgba(var(--primary-rgb, 2, 136, 209), 0.05);
+    border-color: rgba(var(--primary-rgb, 2, 136, 209), 0.1);
+}
+
+.ec-checkbox-custom input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.ec-checkbox-box {
+    width: 24px;
+    height: 24px;
+    background: var(--ec-glass-bg, #fff);
+    border: 2px solid var(--ec-glass-border, #e2e8f0);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.ec-checkbox-custom input[type="checkbox"]:checked ~ .ec-checkbox-box {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-color: #10b981;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.ec-checkbox-box i {
+    color: #fff;
+    font-size: 11px;
+    opacity: 0;
+    transform: scale(0.4) rotate(-20deg);
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.ec-checkbox-custom input[type="checkbox"]:checked ~ .ec-checkbox-box i {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+}
+
+.ec-checkbox-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ec-text-main);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+}
+
+.dark-theme .ec-checkbox-custom:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
 /* ============================================================ */
-
-
