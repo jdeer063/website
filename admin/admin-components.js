@@ -103,17 +103,19 @@ function showCustomerModal() {
                             <div class="ec-form-grid ec-col-3">
                                 <div class="ec-field ec-span-2">
                                     <label class="ec-label">Contact Number <span class="ec-req">*</span></label>
-                                    <input class="ec-input" type="tel" name="contact" placeholder="+639XXXXXXXXX" value="+63" maxlength="13" oninput="let digits = this.value.replace(/[^0-9]/g, ''); if(digits.startsWith('63')) digits = digits.slice(2); else if(digits.startsWith('0')) digits = digits.slice(1); this.value = '+63' + digits.slice(0, 10);" required />
+                                    <input class="ec-input" type="tel" name="contact" id="custContact" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); window.validateCustomerStep1();" required />
+                                    <div class="ec-error-message" id="custContactError">Must start with 09 and be 11 digits.</div>
                                 </div>
                                 <div class="ec-field ec-span-1">
                                     <label class="ec-label">Age <span class="ec-req">*</span></label>
-                                    <input class="ec-input ec-input-center" type="number" name="age" placeholder="—" min="1" max="150" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 3)" required />
+                                    <input class="ec-input ec-input-center" type="number" name="age" id="custAge" placeholder="—" min="1" max="150" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 3); window.validateCustomerStep1();" required />
+                                    <div class="ec-error-message" id="custAgeError">Must be 18 or older.</div>
                                 </div>
                             </div>
 
                             <div class="ec-footer">
                                 <button type="button" class="ec-btn-ghost" onclick="closeModal('customerModal')">Cancel</button>
-                                <button type="button" class="ec-btn-primary" id="custBtnNext">
+                                <button type="button" class="ec-btn-primary" id="custBtnNext" disabled>
                                     Next Step <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
@@ -136,7 +138,7 @@ function showCustomerModal() {
                                         <option value="commercial-a">Semi-Commercial A</option>
                                         <option value="commercial-b">Semi-Commercial B</option>
                                         <option value="commercial-c">Semi-Commercial C</option>
-                                        <option value="full-commercial">Commercial / Industrial</option>
+                                        <option value="full-commercial">Industrial</option>
                                         <option value="bulk">Bulk / Wholesale</option>
                                     </select>
                                 </div>
@@ -147,14 +149,20 @@ function showCustomerModal() {
                                 </div>
                             </div>
 
-                            <div class="ec-field" style="margin-top: 5px;">
-                                <label class="ec-checkbox-custom">
-                                    <input type="checkbox" name="discount" value="true" />
-                                    <div class="ec-checkbox-box">
-                                        <i class="fas fa-check"></i>
+                            <div class="ec-field" style="margin-top: 1rem;">
+                                <div class="senior-discount-card" id="seniorDiscountCard">
+                                    <div class="senior-info">
+                                        <div class="senior-icon"><i class="fas fa-wheelchair"></i></div>
+                                        <div class="senior-text">
+                                            <span class="senior-label">Senior Citizen Discount</span>
+                                            <span class="senior-percentage">${window.currentSettings ? (window.currentSettings.discount_percentage || 0) : 5}% reduction applied</span>
+                                        </div>
                                     </div>
-                                    <span class="ec-checkbox-label">Senior Citizen Discount (${window.currentSettings ? (window.currentSettings.discount_percentage || 0) : 5}%)</span>
-                                </label>
+                                    <label class="ec-switch">
+                                        <input type="checkbox" name="discount" id="custDiscount" value="true" />
+                                        <span class="ec-switch-slider"></span>
+                                    </label>
+                                </div>
                             </div>
 
                             <div class="ec-footer">
@@ -175,11 +183,130 @@ function showCustomerModal() {
 
     document.getElementById('modalContainer').innerHTML = modalHTML;
     
+    // Initial Validation Setup
+    window.validateCustomerStep1 = () => {
+        const form = document.getElementById('customerForm');
+        const nextBtn = document.getElementById('custBtnNext');
+        if (!form || !nextBtn) return;
+
+        const lastName = (form.lastName.value || '').trim();
+        const firstName = (form.firstName.value || '').trim();
+        const contact = (form.contact.value || '').trim();
+        const agePart = form.age.value;
+        const age = parseInt(agePart);
+
+        let isValid = true;
+
+        // Reset errors
+        document.querySelectorAll('#customerModal .ec-field').forEach(f => f.classList.remove('has-error'));
+
+        // Basic Check
+        if (!lastName || !firstName) isValid = false;
+
+        // Contact Check: 09XXXXXXXXX (11 digits)
+        const contactValid = /^09\d{9}$/.test(contact);
+        if (contact && !contactValid) {
+            const err = document.getElementById('custContactError');
+            if (err) err.parentElement.classList.add('has-error');
+            isValid = false;
+        } else if (!contact) {
+            isValid = false;
+        }
+
+        // Age Check: 18+
+        if (agePart && age < 18) {
+            const err = document.getElementById('custAgeError');
+            if (err) err.parentElement.classList.add('has-error');
+            isValid = false;
+        } else if (!agePart) {
+            isValid = false;
+        }
+
+        // Auto-check Senior Discount (60+)
+        const discountCheck = document.getElementById('custDiscount');
+        const seniorCard = document.getElementById('seniorDiscountCard');
+        if (discountCheck) {
+            if (age >= 60) {
+                discountCheck.checked = true;
+                if (seniorCard) seniorCard.classList.add('active');
+            } else if (agePart && age < 60) {
+                // Optionally could uncheck here if it was auto-checked, 
+                // but usually better to leave manual state unless specifically asked for "strict uncheck"
+            }
+        }
+
+        nextBtn.disabled = !isValid;
+    };
+
+    // Meter Suggestion Logic
+    async function suggestNextMeterNumber() {
+        const input = document.querySelector('#customerForm input[name="meterNumber"]');
+        if (!input) return;
+
+        try {
+            // Get the latest one by ID (most recent)
+            const { data, error } = await supabase
+                .from('customers')
+                .select('meter_number')
+                .order('id', { ascending: false })
+                .limit(1);
+
+            if (error) throw error;
+
+            if (data && data.length > 0) {
+                const latest = data[0].meter_number;
+                if (!latest || latest === 'N/A') return;
+
+                const currentYear = new Date().getFullYear();
+                
+                // Common Patterns: MTR-YYYY-NNN or MTR-NNN
+                const parts = latest.split('-');
+                if (parts.length >= 2) {
+                    const lastPart = parts[parts.length - 1];
+                    const numMatch = lastPart.match(/\d+/);
+                    if (numMatch) {
+                        const nextNum = parseInt(numMatch[0]) + 1;
+                        const padded = nextNum.toString().padStart(lastPart.length, '0');
+                        
+                        // Construct next logical ID
+                        const nextStr = `MTR-${currentYear}-${padded}`;
+                        input.placeholder = `e.g. ${nextStr}`;
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('Meter suggestion failed:', e);
+        }
+    }
+
+    // Manual Switch Logic
+    document.getElementById('customerForm').addEventListener('change', (e) => {
+        if (e.target.id === 'custDiscount') {
+            const card = document.getElementById('seniorDiscountCard');
+            if (card) {
+                if (e.target.checked) card.classList.add('active');
+                else card.classList.remove('active');
+            }
+        }
+    });
+
+    // Add listners for name fields too
+    const step1Inputs = document.querySelectorAll('#custStep1 input');
+    step1Inputs.forEach(input => {
+        if (!input.hasAttribute('oninput')) {
+            input.addEventListener('input', window.validateCustomerStep1);
+        }
+    });
+
     // Show modal
     const modal = document.getElementById('customerModal');
     if (modal) {
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('active'), 10);
+        // Run initial validation
+        window.validateCustomerStep1();
+        // Predict next meter number
+        suggestNextMeterNumber();
     }
 
     // Stepper Logic
@@ -342,20 +469,22 @@ function showStaffModal() {
                                 </div>
                                 <div class="ec-field">
                                     <label class="ec-label">Contact Number <span class="ec-req">*</span></label>
-                                    <input class="ec-input" type="tel" name="contact" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)" required />
+                                    <input class="ec-input" type="tel" name="contact" id="staffContact" placeholder="09XXXXXXXXX" maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11); window.validateStaffStep1();" required />
+                                    <div class="ec-error-message" id="staffContactError">Must start with 09 and be 11 digits.</div>
                                 </div>
                             </div>
 
                             <div class="ec-form-grid ec-col-3">
                                 <div class="ec-field ec-span-1">
                                     <label class="ec-label">Age <span class="ec-req">*</span></label>
-                                    <input class="ec-input ec-input-center" type="number" name="age" placeholder="25" min="1" max="150" required />
+                                    <input class="ec-input ec-input-center" type="number" name="age" id="staffAge" placeholder="25" min="1" max="150" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 3); window.validateStaffStep1();" required />
+                                    <div class="ec-error-message" id="staffAgeError">Must be 18 or older.</div>
                                 </div>
                             </div>
 
                             <div class="ec-footer">
                                 <button type="button" class="ec-btn-ghost" onclick="closeModal('staffModal')">Cancel</button>
-                                <button type="button" class="ec-btn-primary" id="staffBtnNext">
+                                <button type="button" class="ec-btn-primary" id="staffBtnNext" disabled>
                                     Next Step <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
@@ -404,6 +533,56 @@ function showStaffModal() {
         modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('active'), 10);
     }
+
+    // Validation Logic
+    window.validateStaffStep1 = () => {
+        const form = document.getElementById('staffForm');
+        const nextBtn = document.getElementById('staffBtnNext');
+        if (!form || !nextBtn) return;
+
+        const lastName = form.lastName.value.trim();
+        const firstName = form.firstName.value.trim();
+        const contact = form.contact.value.trim();
+        const age = parseInt(form.age.value);
+
+        let isValid = true;
+
+        // Reset errors
+        document.querySelectorAll('#staffModal .ec-field').forEach(f => f.classList.remove('has-error'));
+
+        // Basic Check
+        if (!lastName || !firstName) isValid = false;
+
+        // Contact Check: 09XXXXXXXXX (11 digits)
+        const contactValid = /^09\d{9}$/.test(contact);
+        if (contact && !contactValid) {
+            document.getElementById('staffContactError').parentElement.classList.add('has-error');
+            isValid = false;
+        } else if (!contact) {
+            isValid = false;
+        }
+
+        // Age Check: 18+
+        if (form.age.value && age < 18) {
+            document.getElementById('staffAgeError').parentElement.classList.add('has-error');
+            isValid = false;
+        } else if (!form.age.value) {
+            isValid = false;
+        }
+
+        nextBtn.disabled = !isValid;
+    };
+
+    // Add listners for all step 1 fields
+    const step1Inputs = document.querySelectorAll('#staffStep1 input, #staffStep1 select');
+    step1Inputs.forEach(input => {
+        if (!input.hasAttribute('oninput')) {
+            input.addEventListener('input', window.validateStaffStep1);
+        }
+    });
+
+    // Run initial validation
+    window.validateStaffStep1();
 
     // Stepper Navigation Logic
     let currentStep = 1;
@@ -844,7 +1023,9 @@ async function showBillModal(billId) {
     try {
         const { data: bill, error } = await supabase
             .from('billing')
-            .select(`*, customers (id, last_name, first_name, middle_initial, address, meter_number, customer_type, has_discount, meter_size)`)
+            .select(`*, 
+                customers (id, last_name, first_name, middle_initial, address, meter_number, customer_type, has_discount, meter_size), 
+                collector:profiles!collected_by(first_name, last_name)`)
             .eq('id', billId)
             .maybeSingle();
 
@@ -854,6 +1035,11 @@ async function showBillModal(billId) {
 
         const middleInitial = customer.middle_initial ? ` ${customer.middle_initial}.` : '';
         const customerName = `${customer.last_name}, ${customer.first_name}${middleInitial}`;
+
+        // Dynamic attribution: Pull the name of the staff member who processed this specific payment
+        // We use the alias 'collector' from our join
+        const collectorProfile = bill.collector;
+        const cashierName = collectorProfile ? `${collectorProfile.first_name} ${collectorProfile.last_name}` : 'CASHIER';
 
         // Settings and Schedules for logic
         const [settings, schedules] = await Promise.all([
@@ -866,6 +1052,7 @@ async function showBillModal(billId) {
         const data = window.BillingEngine.calculate(bill, customer, settings, schedule);
         const invoiceHTML = window.BillingEngine.generateInvoiceHTML(bill, customer, data, { 
             customerName,
+            cashierName,
             premiumTimestamp: true 
         });
 
@@ -1031,7 +1218,7 @@ function editCustomer(customerId, row, cells) {
                                         <option value="commercial-a" ${customer.type === 'commercial-a' ? 'selected' : ''}>Semi-Commercial A</option>
                                         <option value="commercial-b" ${customer.type === 'commercial-b' ? 'selected' : ''}>Semi-Commercial B</option>
                                         <option value="commercial-c" ${customer.type === 'commercial-c' ? 'selected' : ''}>Semi-Commercial C</option>
-                                        <option value="full-commercial" ${customer.type === 'full-commercial' ? 'selected' : ''}>Commercial / Industrial</option>
+                                        <option value="full-commercial" ${customer.type === 'full-commercial' ? 'selected' : ''}>Industrial</option>
                                         <option value="bulk" ${customer.type === 'bulk' ? 'selected' : ''}>Bulk / Wholesale</option>
                                     </select>
                                 </div>

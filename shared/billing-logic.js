@@ -244,7 +244,7 @@
                         <h2 class="invoice-main-title">SERVICE INVOICE</h2>
                         <div class="invoice-date-box">
                             <span>Date</span>
-                            <span class="ink-line" style="min-width: 150px;"></span>
+                            <span class="ink-line" style="min-width: 150px; text-align: center;">${new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}</span>
                         </div>
                     </div>
 
@@ -317,7 +317,7 @@
                         </div>
                         <div class="footer-right">
                             <div class="signature-box">
-                                <span class="ink-line" style="width: 200px;"></span>
+                                <span class="ink-line" style="width: 200px; text-align: center; text-transform: uppercase; font-weight: 700;">${options.cashierName || ''}</span>
                                 <label>Cashier / Collector</label>
                             </div>
                             <div class="serial-number">

@@ -667,7 +667,7 @@
         try {
             const { data: bill, error: billError } = await supabase
                 .from('billing')
-                .select('*')
+                .select(`*, collector:profiles!collected_by(first_name, last_name)`)
                 .eq('id', billId)
                 .single();
 
@@ -685,6 +685,10 @@
             const middleInitial = customer.middle_initial ? ` ${customer.middle_initial}.` : '';
             const customerName = `${customer.last_name}, ${customer.first_name}${middleInitial}`;
 
+            // Dynamic attribution: Pull the name of the staff member who processed this specific payment
+            const collectorProfile = bill.collector;
+            const cashierName = collectorProfile ? `${collectorProfile.first_name} ${collectorProfile.last_name}` : 'CASHIER';
+
             // Settings and Schedules for logic
             const [settings, schedules] = await Promise.all([
                 window.cashierDb.loadSystemSettings(),
@@ -694,7 +698,7 @@
             const schedule = schedules.find(s => s.category_key === customer.customer_type);
 
             const data = window.BillingEngine.calculate(bill, customer, settings, schedule);
-            const invoiceHTML = window.BillingEngine.generateInvoiceHTML(bill, customer, data, { customerName });
+            const invoiceHTML = window.BillingEngine.generateInvoiceHTML(bill, customer, data, { customerName, cashierName });
 
             const modalHTML = `
                 <div class="modal-overlay" id="billModal">

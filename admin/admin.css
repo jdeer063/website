@@ -75,7 +75,7 @@ body {
 
 /* Fix: Dashboard sticking to the top when sidebar is active */
 .sidebar:not(.mini) .sidebar-header {
-    padding-top: 40px !important;
+    padding-top: 20px !important;
     height: auto !important;
 }
 
@@ -1365,6 +1365,13 @@ body {
 .btn-icon:hover {
     background: var(--bg-light);
     color: var(--text-primary);
+}
+
+.btn-icon:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+    background: none !important;
+    color: var(--text-muted) !important;
 }
 
 /* === RESPONSIVE === */
@@ -2725,7 +2732,7 @@ tr.status-inactive .customer-meta {
 .badge.type-commercial-a { background: rgba(67, 160, 71, 0.1); color: #43A047; border: 1px solid rgba(67, 160, 71, 0.2); }
 .badge.type-commercial-b { background: rgba(251, 140, 0, 0.1); color: #FB8C00; border: 1px solid rgba(251, 140, 0, 0.2); }
 .badge.type-commercial-c { background: rgba(6, 182, 212, 0.1); color: #06B6D4; border: 1px solid rgba(6, 182, 212, 0.2); }
-.badge.type-full-commercial { background: rgba(229, 57, 53, 0.1); color: #E53935; border: 1px solid rgba(229, 57, 53, 0.2); }
+.badge.type-full-commercial, .badge.type-industrial { background: rgba(229, 57, 53, 0.1); color: #E53935; border: 1px solid rgba(229, 57, 53, 0.2); }
 .badge.type-bulk { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; border: 1px solid rgba(139, 92, 246, 0.2); }
 
 /* Premium Senior Citizen Badge */
@@ -6640,3 +6647,138 @@ input[type='password']::-ms-clear {
 }
 
 /* ============================================================ */
+
+/* === FORM VALIDATION STYLES === */
+.ec-error-message {
+    color: #FF5252;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-top: 4px;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.ec-field.has-error .ec-input {
+    border-color: #FF5252 !important;
+    background: rgba(255, 82, 82, 0.05) !important;
+}
+
+.ec-field.has-error .ec-error-message {
+    display: block;
+}
+
+.ec-btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* === SENIOR DISCOUNT CARD UI === */
+.senior-discount-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(var(--primary-rgb, 2, 136, 209), 0.05);
+    border: 1px solid var(--ec-glass-border);
+    padding: 1rem 1.25rem;
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.senior-discount-card.active {
+    background: rgba(16, 185, 129, 0.08); /* Success/Green tint */
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.15);
+}
+
+.senior-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.senior-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(var(--primary-rgb, 2, 136, 209), 0.15);
+    color: var(--primary);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.senior-discount-card.active .senior-icon {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.senior-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.senior-label {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ec-text-main);
+}
+
+.senior-percentage {
+    font-size: 0.7rem;
+    color: var(--ec-text-muted);
+    font-weight: 500;
+}
+
+/* === MODERN SWITCH UI === */
+.ec-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+}
+
+.ec-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ec-switch-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--ec-glass-border);
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+.ec-switch-slider:before {
+    position: absolute;
+    content: '';
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.ec-switch input:checked + .ec-switch-slider {
+    background-color: #10b981;
+}
+
+.ec-switch input:checked + .ec-switch-slider:before {
+    transform: translateX(22px);
+}
+

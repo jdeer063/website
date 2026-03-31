@@ -189,15 +189,29 @@
 
     async function finalizePayment(billId, amount, method, reference) {
         try {
-            // Call Secure RPC
-            const { data, error } = await supabase.rpc('record_payment', {
+            // Get current staff ID for collector tracking
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError) console.warn('Collector Tracking: Unable to get session:', sessionError);
+            
+            const collectorId = (session && session.user && session.user.id) ? session.user.id : null;
+
+            // Prepare RPC arguments - only include p_collector_id if valid to prevent type errors
+            const rpcArgs = {
                 p_bill_id: billId,
                 p_amount: amount,
                 p_method: method,
                 p_reference: reference
-            });
+            };
+            
+            if (collectorId) rpcArgs.p_collector_id = collectorId;
 
-            if (error) throw error;
+            // Call Secure RPC with Collector ID
+            const { data, error } = await supabase.rpc('record_payment', rpcArgs);
+
+            if (error) {
+                console.error('[record_payment] Server Error:', error);
+                throw error;
+            }
 
             // --- Audit Log ---
             if (window.logAuditAction) {

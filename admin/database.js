@@ -212,7 +212,11 @@ async function loadCustomers(options = {}) {
                 meterNo.includes(lowSearch) ||
                 address.includes(lowSearch);
 
-            const matchesType = !type || (c.customer_type || '').toLowerCase() === type.toLowerCase();
+            let matchesType = !type || (c.customer_type || '').toLowerCase() === type.toLowerCase();
+            // Group legacy 'industrial' with new 'full-commercial'
+            if (type === 'full-commercial' && (c.customer_type || '').toLowerCase() === 'industrial') {
+                matchesType = true;
+            }
             const matchesBarangay = !barangay || getBarangay(c.address).toLowerCase() === barangay.toLowerCase();
 
             return matchesSearch && matchesType && matchesBarangay;
@@ -265,7 +269,8 @@ async function loadCustomers(options = {}) {
                     <span class="badge type-${(c.customer_type || 'residential').toLowerCase()}">
                         ${{
                     'residential': 'Residential',
-                    'full-commercial': 'Commercial / Industrial',
+                    'industrial': 'Industrial',
+                    'full-commercial': 'Industrial',
                     'commercial-a': 'Semi-Commercial A',
                     'commercial-b': 'Semi-Commercial B',
                     'commercial-c': 'Semi-Commercial C',
@@ -313,7 +318,7 @@ async function addCustomer(customerData) {
         }
 
         // 2. Proceed with insert
-        const { error } = await supabase
+        const { data: newCust, error } = await supabase
             .from('customers')
             .insert([{
                 last_name: customerData.lastName,
@@ -327,7 +332,9 @@ async function addCustomer(customerData) {
                 age: customerData.age,
                 status: customerData.status || 'active',
                 has_discount: customerData.discount
-            }]);
+            }])
+            .select('id')
+            .single();
 
         if (error) {
             if (error.code === '23505') { // Postgres Unique Violation
@@ -336,14 +343,23 @@ async function addCustomer(customerData) {
             throw error;
         }
 
-        // 3. --- Audit Log ---
+        const newId = newCust?.id;
+
+        // 3. --- Notifications ---
+        await supabase.from('notifications').insert({
+            type: 'new_customer',
+            message: `New Customer Registered: ${customerData.firstName} ${customerData.lastName} (Meter: ${customerData.meterNumber})`,
+            customer_id: newId
+        }).catch(err => console.warn('Notification failed:', err));
+
+        // 4. --- Audit Log ---
         const statusLabel = (customerData.status || 'active').toLowerCase() === 'active' ? 'Active' : 'Inactive';
         await logAuditAction(
             'CREATE',
             'customer',
-            null,
-            `Added new customer: ${customerData.firstName} ${customerData.lastName} (${statusLabel})`,
-            { customer_id: null }
+            newId,
+            `Added new customer: ${customerData.firstName} ${customerData.lastName} (Meter: ${customerData.meterNumber}, Status: ${statusLabel})`,
+            { customer_id: newId, meter_number: customerData.meterNumber }
         );
 
         // Success handled by UI caller
@@ -550,7 +566,7 @@ async function addStaff(staffData) {
         }
 
         // 2. Insert staff record
-        const { error } = await supabase
+        const { data: newStaff, error } = await supabase
             .from('staff')
             .insert([{
                 last_name: staffData.lastName,
@@ -560,8 +576,10 @@ async function addStaff(staffData) {
                 contact_number: staffData.contact,
                 username: staffData.username,
                 age: staffData.age,
-                status: staffData.status || 'inactive'
-            }]);
+                status: staffData.status || 'active'
+            }])
+            .select('id')
+            .single();
 
         if (error) {
             if (error.code === '23505') { // Unique violation
@@ -569,6 +587,8 @@ async function addStaff(staffData) {
             }
             throw error;
         }
+
+        const newId = newStaff?.id;
 
         // 3. Provision Auth Account automatically
         try {
@@ -579,13 +599,21 @@ async function addStaff(staffData) {
             // We don't throw here to keep the staff record, but log it for repair
         }
 
-        // --- Audit Log ---
+        // 4. --- Notifications ---
+        await supabase.from('notifications').insert({
+            type: 'new_staff',
+            message: `New Staff Registered: ${staffData.firstName} ${staffData.lastName} (${staffData.role})`,
+            staff_id: newId
+        }).catch(err => console.warn('Notification failed:', err));
+
+        // 5. --- Audit Log ---
         const statusLabel = (staffData.status || 'active').toLowerCase() === 'active' ? 'Active' : 'Inactive';
         await logAuditAction(
             'CREATE',
             'staff',
-            staffData.username,
-            `Added new staff member: ${staffData.firstName} ${staffData.lastName} (${staffData.role}, ${statusLabel})`
+            newId,
+            `Added new staff member: ${staffData.firstName} ${staffData.lastName} (${staffData.role}, ${statusLabel})`,
+            { staff_id: newId, username: staffData.username }
         );
 
         // Success handled by UI caller
@@ -1066,7 +1094,9 @@ async function loadBilling(filters = {}) {
                 </td>
                 <td class="col-actions">
                     <div class="action-buttons">
-                        <button class="btn-icon" title="View Bill"><i class="fas fa-file-invoice"></i></button>
+                        <button class="btn-icon" title="${bill.status === 'paid' ? 'View/Print Invoice' : 'Unpaid: Invoice Unavailable'}" ${bill.status === 'paid' ? '' : 'disabled'}>
+                            <i class="fas fa-file-invoice"></i>
+                        </button>
                         <button class="btn-icon" title="View Ledger"><i class="fas fa-book"></i></button>
                     </div>
                 </td>
@@ -1951,7 +1981,15 @@ async function loadMasterLedger(options = {}) {
                 <td><strong>${c.last_name}, ${c.first_name}</strong>${isInactive ? ' <span class="badge-deactivated">DEACTIVATED</span>' : ''}${c.has_discount ? ' <span class="badge-senior" title="Senior Citizen Discount Active">SENIOR</span>' : ''}</td>
                 <td>${getBarangay(c.address)}</td>
                 <td><span class="meter-number">${c.meter_number || '--'}</span></td>
-                <td><span class="badge type-${(c.customer_type || 'residential').toLowerCase()}">${c.customer_type ? c.customer_type.replace(/-/g, ' ').toUpperCase() : 'RESIDENTIAL'}</span></td>
+                <td><span class="badge type-${(c.customer_type || 'residential').toLowerCase()}">${{
+                    'residential': 'RESIDENTIAL',
+                    'industrial': 'INDUSTRIAL',
+                    'full-commercial': 'INDUSTRIAL',
+                    'commercial-a': 'SEMI-COMMERCIAL A',
+                    'commercial-b': 'SEMI-COMMERCIAL B',
+                    'commercial-c': 'SEMI-COMMERCIAL C',
+                    'bulk': 'BULK / WHOLESALE'
+                }[c.customer_type] || (c.customer_type || 'RESIDENTIAL').replace(/-/g, ' ').toUpperCase()}</span></td>
                 <td class="${balance > 0 ? 'text-danger fw-bold' : 'text-success'}">
                     ₱${balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </td>
