@@ -1,0 +1,864 @@
+/* Shared Design System & Common Utilities */
+
+:root {
+    /* Brand Colors */
+    --primary: #0288D1;
+    --primary-dark: #01579B;
+    --secondary: #00897B;
+    --success: #4CAF50;
+    --warning: #FF9800;
+    --danger: #F44336;
+    --info: #2196F3;
+
+    /* Base Layout & Theme Variables */
+    --bg-primary: #F5F7FA;
+    --bg-secondary: #FFFFFF;
+    --card-bg: #FFFFFF;
+    --text-primary: #1E293B;
+    --text-secondary: #64748B;
+    --text-light: #94A3B8;
+    --border-color: #E2E8F0;
+    --sidebar-bg: #FFFFFF;
+    --header-bg: rgba(255, 255, 255, 0.8);
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.5);
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+
+    /* Modal & Overlay Variables */
+    --modal-overlay: rgba(15, 23, 42, 0.4);
+    --modal-bg: rgba(255, 255, 255, 0.95);
+
+    /* Layout Constants */
+    --sidebar-width: 260px;
+    --sidebar-mini-width: 80px;
+    --header-height: 60px;
+    --transition-speed: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Legacy Base Variables Proxy */
+    --bg-light: var(--bg-primary);
+    --bg-white: var(--bg-secondary);
+    --border: var(--border-color);
+}
+
+/* Dark Theme Overrides */
+.dark-theme,
+body.dark-theme {
+    color-scheme: dark;
+    --bg-primary: #111827;
+    --bg-secondary: #1F2937;
+    --card-bg: #1F2937;
+    --text-primary: #F9FAFB;
+    --text-secondary: #9CA3AF;
+    --text-light: #6B7280;
+    --border-color: #374151;
+    --sidebar-bg: #111827;
+    --header-bg: rgba(17, 24, 39, 0.8);
+    --glass-bg: rgba(31, 41, 55, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --modal-overlay: rgba(0, 0, 0, 0.65);
+    --modal-bg: rgba(55, 65, 81, 0.98);
+
+    /* Form & UI specialized dark variables */
+    --input-bg: #1F2937;
+    --input-border: #4B5563;
+    --input-focus-border: #60A5FA;
+    --btn-secondary-border: rgba(255, 255, 255, 0.2);
+    --btn-secondary-text: #E2E8F0;
+
+    /* Re-map legacy proxies for dark mode consistency */
+    --bg-light: var(--bg-primary);
+    --bg-white: var(--bg-secondary);
+    --border: var(--border-color);
+}
+
+/* Base Resets */
+* {
+    box-sizing: border-box;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed);
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* === GLOBAL PREMIUM SCROLLBARS === */
+html ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+html ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+html ::-webkit-scrollbar-thumb {
+    background: rgba(100, 116, 139, 0.4); /* Default Slate thumb */
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background-color 0.3s ease;
+}
+
+html ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 116, 139, 0.7);
+}
+
+/* Dark theme globals */
+html.dark-theme ::-webkit-scrollbar-thumb,
+body.dark-theme ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+html.dark-theme ::-webkit-scrollbar-thumb:hover,
+body.dark-theme ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+
+/* Global Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    height: 44px;
+    padding: 0 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    border: none;
+}
+
+.btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+/* Common Modal System */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--modal-overlay);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal {
+    background: var(--modal-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-radius: 20px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 1px var(--glass-border) inset;
+    max-width: 90vw;
+    width: 600px;
+    position: relative;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--glass-border);
+    animation: slideInModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+
+/* Notifications */
+#notificationContainer {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 10000;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.notification {
+    position: relative;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    background: var(--card-bg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-left: 4px solid var(--primary);
+    pointer-events: auto;
+}
+
+.notification.success {
+    border-left-color: var(--success);
+}
+
+.notification.error {
+    border-left-color: var(--danger);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Utility */
+.flex-1 {
+    flex: 1;
+}
+
+/* =============================================
+   SERVICE INVOICE - Shared between Admin & Cashier
+   ============================================= */
+.service-invoice-modal {
+    max-width: 850px !important;
+    width: 95% !important;
+    padding: 0 !important;
+    background: #f0f0f0 !important;
+    border-radius: 8px !important;
+    overflow: auto !important;
+}
+
+/* Force dark text on invoice button row so it's always visible (light bg) */
+.service-invoice-modal .button-row-receipt .btn {
+    color: #1E293B !important;
+    border-color: #CBD5E1 !important;
+}
+
+.service-invoice-modal .button-row-receipt .btn:hover {
+    background: #1E293B !important;
+    border-color: #1E293B !important;
+    color: #fff !important;
+}
+
+.service-invoice-modal .button-row-receipt .btn-primary {
+    background: var(--primary, #0288D1) !important;
+    color: #fff !important;
+    border-color: var(--primary, #0288D1) !important;
+}
+
+.service-invoice-paper {
+    background: #fff !important;
+    color: #000 !important;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    padding: 2.5rem;
+    position: relative;
+}
+
+.invoice-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.invoice-logo img {
+    height: 70px;
+    filter: grayscale(1);
+}
+
+.invoice-district-info h1 {
+    font-size: 1.8rem;
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.invoice-district-info p {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.invoice-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 2rem;
+    border-top: 2px solid #000;
+    padding-top: 1rem;
+}
+
+.invoice-main-title {
+    font-size: 2rem;
+    font-weight: 800;
+    text-decoration: underline;
+    margin: 0;
+}
+
+.invoice-date-box {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+}
+
+.ink-line {
+    border-bottom: 1px solid #000;
+    padding: 0 10px;
+    font-weight: 700;
+    min-height: 1.4rem;
+    display: inline-block;
+}
+
+.invoice-customer-info {
+    margin-bottom: 2rem;
+}
+
+.info-field {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.info-field label {
+    white-space: nowrap;
+}
+
+.invoice-payment-details {
+    margin-bottom: 2rem;
+    border: 1px solid #000;
+    padding: 1.5rem;
+}
+
+.payment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+}
+
+.payment-row-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.invoice-footer-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.payment-method-boxes {
+    margin-bottom: 1rem;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.bank-info-line {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.invoice-note {
+    font-size: 0.8rem;
+    font-style: italic;
+    font-weight: 600;
+    line-height: 1.4;
+    border: 1px solid #000;
+    padding: 0.5rem;
+    display: inline-block;
+}
+
+.footer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.signature-box {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.signature-box label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-top: 0.25rem;
+}
+
+.serial-number {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-top: 1rem;
+}
+
+.serial-red {
+    color: #ff0000;
+}
+
+.invoice-legal-disclaimer {
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    border-top: 1px dashed #000;
+    padding-top: 1rem;
+}
+
+.invoice-legal-disclaimer p {
+    margin: 2px 0;
+}
+
+/* =============================================
+   SHARED UI COMPONENTS
+   ============================================= */
+
+/* --- Loading Overlay --- */
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent; /* Changed from !important to allow overrides */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+.dark-theme .loading-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Global Full-Screen Overlay Override */
+#loadingOverlay.loading-overlay {
+    position: fixed;
+    z-index: 99999;
+    background: var(--modal-overlay); /* Opaque for global theme consistency */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Specific state for initial page load where we want it flex by default */
+#loadingOverlay.loading-overlay:not(.fade-out) {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-overlay.active {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-overlay.fade-out {
+    display: none !important;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loading-content {
+    padding: 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    transform: scale(1);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Global full-screen content gets the premium card look */
+#loadingOverlay .loading-content {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 3rem 4rem;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--card-shadow);
+}
+
+.loading-overlay.fade-out .loading-content {
+    transform: scale(0.9);
+}
+
+.loading-text h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+/* Water Loader Animation */
+.water-loader {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.water-loader .drop {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--primary);
+    border-radius: 50%;
+    opacity: 0;
+    animation: ripple 2s infinite cubic-bezier(0, 0.2, 0.8, 1);
+}
+
+.water-loader .drop:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.water-loader .drop:nth-child(3) {
+    animation-delay: 1s;
+}
+
+@keyframes ripple {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+
+    100% {
+        width: 60px;
+        height: 60px;
+        opacity: 0;
+    }
+}
+
+/* Elegant Spinner for Scoped Loaders */
+.spinner-elegant {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(2, 136, 209, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin-elegant 0.8s linear infinite;
+}
+
+@keyframes spin-elegant {
+    to { transform: rotate(360deg); }
+}
+
+.loading-overlay .spinner-elegant {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -20px;
+    margin-left: -20px;
+}
+
+/* --- Modals --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--modal-overlay);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal {
+    background: var(--modal-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    width: 100%;
+    max-width: 550px;
+    border-radius: 24px;
+    box-shadow: 
+        0 25px 50px -12px rgba(0, 0, 0, 0.4),
+        0 0 0 1px var(--glass-border) inset,
+        0 0 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    max-height: 92vh;
+    animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid var(--glass-border);
+    overflow: hidden; /* Outer bound clip */
+}
+
+@keyframes slideUpModal {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    background: var(--bg-primary);
+    color: var(--danger);
+}
+
+.modal-body {
+    padding: 1.5rem 2rem;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background-color: var(--primary);
+    border-radius: 10px;
+}
+
+.modal-footer {
+    padding: 1.25rem 2rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* --- Stats Cards --- */
+.stat-card {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.stat-value-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.stat-sub-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    opacity: 0.8;
+}
+
+.stat-icon.blue {
+    background: linear-gradient(135deg, rgba(2, 136, 209, 0.1), rgba(2, 136, 209, 0.2));
+    color: var(--primary);
+}
+
+.stat-icon.green {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.2));
+    color: var(--success);
+}
+
+.stat-icon.orange {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.1), rgba(255, 152, 0, 0.2));
+    color: var(--warning);
+}
+
+.stat-icon.red {
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.1), rgba(244, 67, 54, 0.2));
+    color: var(--danger);
+}
+
+/* --- Password Visibility Toggle --- */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-wrapper input {
+    padding-right: 45px !important;
+    width: 100%;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--text-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.toggle-password:hover {
+    background: rgba(2, 136, 209, 0.1);
+    color: var(--primary);
+}
+
+.toggle-password i {
+    font-size: 1.1rem;
+}
+
+.dark-theme .toggle-password:hover {
+    background: rgba(255, 255, 255, 0.05);
+}

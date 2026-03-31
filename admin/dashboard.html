@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Pulupandan Water District</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../shared/common.css">
+    <link rel="stylesheet" href="admin.css">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="water-loader">
+                <div class="drop"></div>
+                <div class="drop"></div>
+                <div class="drop"></div>
+            </div>
+            <div class="loading-text">
+                <h3>Collecting data...</h3>
+            </div>
+        </div>
+    </div>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="../assets/logo.png" alt="PWD Logo" style="width: 40px; height: 40px; object-fit: contain;">
+                <div class="logo-text-container"
+                    style="display: flex; flex-direction: column; line-height: 1.1; margin-left: 8px;">
+                    <span class="logo-text" style="font-size: 0.95rem;">Pulupandan</span>
+                    <span class="logo-subtext" style="font-size: 0.75rem; opacity: 0.8; font-weight: 500;">Water
+                        District</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <line x1="9" y1="3" x2="9" y2="21" />
+                </svg>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" />
+                    <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" />
+                    <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" />
+                    <rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#customers" class="nav-item" data-page="customers">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="6" r="3" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M4 17C4 13.6863 6.68629 11 10 11C13.3137 11 16 13.6863 16 17" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                <span>Customers</span>
+            </a>
+            <a href="#staff" class="nav-item" data-page="staff">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="7" cy="6" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                    <circle cx="13" cy="6" r="2.5" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M2 16C2 13.7909 3.79086 12 6 12H8C8.55228 12 9 12.4477 9 13" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" />
+                    <path d="M11 13C11 12.4477 11.4477 12 12 12H14C16.2091 12 18 13.7909 18 16" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                <span>Staff</span>
+            </a>
+            <a href="#billing" class="nav-item" data-page="billing">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="3" y="4" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M3 8H17" stroke="currentColor" stroke-width="1.5" />
+                    <circle cx="6" cy="12" r="0.75" fill="currentColor" />
+                </svg>
+                <span>Billing</span>
+            </a>
+            <a href="#readingList" class="nav-item" data-page="readingList">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 4H16M4 8H16M4 12H16M4 16H10" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                    <rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+                <span>Reading List</span>
+            </a>
+            <a href="#ledger" class="nav-item" data-page="ledger">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 4H16M4 8H16M4 12H16M4 16H10" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                    <rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+                <span>Master Ledger</span>
+            </a>
+            <a href="#scheduling" class="nav-item" data-page="scheduling">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path
+                        d="M6 2V4M14 2V4M3 8H17M4 4H16C17.1046 4 18 4.89543 18 6V16C18 17.1046 17.1046 18 16 18H4C2.89543 18 2 17.1046 2 16V6C2 4.89543 2.89543 4 4 4Z"
+                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Scheduling</span>
+            </a>
+            <a href="#logs" class="nav-item" data-page="logs">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span>Audit Trail</span>
+            </a>
+            <a href="#settings" class="nav-item" data-page="settings">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                    <circle cx="12" cy="12" r="3" />
+                </svg>
+                <span>System Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="logout-btn" id="logoutBtn">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M7 15H4C3.44772 15 3 14.5523 3 14V4C3 3.44772 3.44772 3 4 3H7" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" />
+                    <path d="M12 12L15 9M15 9L12 6M15 9H7" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header" id="mainHeader">
+            <div class="header-left">
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 6H20M4 12H20M4 18H20" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                    </svg>
+                </button>
+                <h1 class="page-title" id="pageTitle">Admin Dashboard</h1>
+            </div>
+            <div class="header-right" style="display: flex; align-items: center; gap: 20px;">
+                <!-- Notification Bell -->
+                <div class="notification-wrapper">
+                    <button id="notificationBellBtn" class="btn-icon" aria-label="Notifications">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+                    </button>
+
+                    <!-- Notifications Dropdown -->
+                    <div id="notificationDropdown" class="notification-dropdown">
+                        <div class="dropdown-header">
+                            <h4>Notifications</h4>
+                            <button id="markAllReadBtn">Mark all read</button>
+                        </div>
+                        <div id="notificationList" class="dropdown-body">
+                            <!-- Notifications inject here -->
+                            <div class="empty-notifications">No new notifications</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <div class="user-details">
+                        <span class="user-name">Admin User</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <script>
+            // Live date + time clock
+            (function () {
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                function updateClock() {
+                    const now = new Date();
+                    const dayEl = document.getElementById('headerDate');
+                    const timeEl = document.getElementById('headerTime');
+                    if (dayEl) dayEl.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+                    if (timeEl) timeEl.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }
+                updateClock();
+                setInterval(updateClock, 1000);
+                // Header scroll shadow
+                const pageContent = document.querySelector('.page-content');
+                const header = document.getElementById('mainHeader');
+                if (pageContent && header) {
+                    pageContent.addEventListener('scroll', () => {
+                        header.classList.toggle('scrolled', pageContent.scrollTop > 10);
+                    });
+                }
+            })();
+        </script>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <!-- Dashboard Page -->
+            <div class="page active" id="dashboardPage">
+                <!-- Bento Grid Layout -->
+                <div class="bento-grid">
+                    <!-- Stats Area (Rows 1: 4 cols) -->
+                    <div class="stat-card col-span-1">
+                        <div class="stat-icon blue">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" />
+                                <path d="M4 20C4 16.6863 6.68629 14 10 14H14C17.3137 14 20 16.6863 20 20"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Customers</span>
+                            <span class="stat-value">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card col-span-1">
+                        <div class="stat-icon green">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2V6M12 18V22M6 12H2M22 12H18" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Revenue (This Month)</span>
+                            <span class="stat-value">₱0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card col-span-1">
+                        <div class="stat-icon orange">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" />
+                                <path d="M12 7V12L15 15" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Pending Bills</span>
+                            <div class="stat-value-group">
+                                <span class="stat-value">0</span>
+                                <span class="stat-sub-value" id="statUnpaidAmount">₱0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card col-span-1" id="overdueBillsCard" onclick="navigateToBilling('cutoff')"
+                        style="cursor: pointer;">
+                        <span id="overdueCutoffWarning" class="cutoff-warning hidden">
+                            <i class="fas fa-exclamation-triangle"></i> <span>CUTOFF</span>
+                        </span>
+                        <div class="stat-icon red">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path
+                                    d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Overdue Bills</span>
+                            <div class="stat-value-group">
+                                <span class="stat-value">0</span>
+                                <span class="stat-sub-value" id="statOverdueAmount">₱0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Area (Row 2: 2 cols each) -->
+                    <div class="chart-card glass col-span-2">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Water Consumption Analysis</h3>
+                            <span class="chart-subtitle">Cubic Meter Usage (Year 2026)</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="consumptionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass col-span-2">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Payment Status Distribution</h3>
+                            <span class="chart-subtitle">Current Billing Cycle Overview</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="paymentStatusChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Table (Row 3: Full Width) -->
+                    <div class="recent-section col-span-4"
+                        style="background: var(--bg-white); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2 class="section-title" style="margin-bottom: 0;">RECENT METER READINGS</h2>
+                            <span class="badge secondary"><i class="fas fa-satellite-dish"></i> Realtime</span>
+                        </div>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th style="text-align: right;">Prev</th>
+                                        <th style="text-align: right;">Pres</th>
+                                        <th style="text-align: right;">Usage</th>
+                                        <th>Date Read</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentActivitiesBody">
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; padding: 2rem; color: #9E9E9E;">
+                                            Loading readings...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Bento Grid -->
+            </div>
+
+            <!-- Customers Page -->
+            <div class="page" id="customersPage">
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="customerSearch" placeholder="Search name, account or meter number..."
+                            class="form-control">
+                    </div>
+                    <div class="filter-group">
+                        <select id="customerStatusFilter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <select id="customerTypeFilter" class="filter-select">
+                            <option value="">All Types</option>
+                            <option value="residential">Residential</option>
+                            <option value="full-commercial">Commercial / Industrial</option>
+                            <option value="commercial-a">Semi-Commercial A</option>
+                            <option value="commercial-b">Semi-Commercial B</option>
+                            <option value="commercial-c">Semi-Commercial C</option>
+                            <option value="bulk">Bulk / Wholesale</option>
+                        </select>
+                        <select id="customerBarangayFilter" class="filter-select">
+                            <option value="">All Barangays</option>
+                        </select>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-primary" id="addCustomerBtn">
+                            <i class="fas fa-plus"></i> Add Customer
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="customerTable">
+                        <thead>
+                            <tr>
+                                <th id="sortAccount" data-sort-key="id">Account Number <i
+                                        class="fas fa-sort sort-icon"></i></th>
+                                <th id="sortName" data-sort-key="last_name">Name <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th>Address</th>
+                                <th>Meter No.</th>
+                                <th>Contact</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 2rem; color: #9E9E9E;">Loading
+                                    customers...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="customerPagination" class="pagination-container"></div>
+                </div>
+            </div>
+
+            <!-- Staff Page -->
+            <div class="page" id="staffPage">
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="staffSearch" placeholder="Search name, role or username..."
+                            class="form-control">
+                    </div>
+                    <div class="filter-group">
+                        <select id="staffStatusFilter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <select id="staffRoleFilter" class="filter-select">
+                            <option value="">All Roles</option>
+
+                            <option value="cashier">Cashier</option>
+                            <option value="reader">Reader</option>
+                        </select>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-primary" id="addStaffBtn">
+                            <i class="fas fa-plus"></i> Add Staff
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Username</th>
+                                <th>Contact</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 2rem; color: #9E9E9E;">Loading
+                                    staff...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="staffPagination" class="pagination-container"></div>
+                </div>
+            </div>
+
+            <!-- Billing Page -->
+            <div class="page" id="billingPage">
+                <!-- Actions full width -->
+                <div class="filter-bar">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="billingSearch"
+                            placeholder="Search bill no, name, account or meter number...">
+                    </div>
+                    <div class="filter-group">
+                        <select id="billingStatusFilter" class="filter-select">
+                            <option value="">All Status</option>
+                            <option value="paid">Paid</option>
+                            <option value="unpaid">Unpaid</option>
+                            <option value="overdue">Overdue</option>
+                            <option value="cutoff">For Cutoff</option>
+                            <option value="disconnected">Disconnected</option>
+                        </select>
+                        <select id="billingMonthFilter" class="filter-select">
+                            <option value="">All Periods</option>
+                            <!-- Populated dynamically -->
+                        </select>
+                        <select id="billingBarangayFilter" class="filter-select">
+                            <option value="">All Barangays</option>
+                        </select>
+                        <button class="btn btn-primary" id="printBillingSummaryBtn"
+                            style="margin-left: 0.5rem; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-print"></i> Print Report
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="col-bill-id">Bill No.</th>
+                                <th class="col-customer">Customer</th>
+                                <th class="col-period">Period</th>
+                                <th class="col-amount text-right">Amount</th>
+                                <th class="col-due-date">Due Date</th>
+                                <th class="col-status">Status</th>
+                                <th class="col-balance text-right">Balance</th>
+                                <th class="col-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billingTableBody">
+                            <tr>
+                                <td colspan="8" style="text-align: center; padding: 2rem; color: #9E9E9E;">No billing
+                                    records yet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="billingPagination" class="pagination-container"></div>
+                </div>
+
+            </div>
+
+            <!-- Master Ledger Page -->
+            <div class="page" id="ledgerPage">
+                <div class="ledger-header">
+                    <div class="ledger-controls">
+                        <div class="filter-bar"
+                            style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: nowrap; width: 100%;">
+                            <div class="search-box" style="flex: 1; min-width: 200px;">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="ledgerSearch" placeholder="Search customer or account ID...">
+                            </div>
+                            <select id="ledgerBarangayFilter" class="filter-select">
+                                <option value="">All Barangays</option>
+                                <!-- Populated by JS -->
+                            </select>
+                            <select id="ledgerPeriodFilter" class="filter-select">
+                                <option value="">All Periods</option>
+                            </select>
+                            <div style="display: flex; gap: 0.5rem; margin-left: auto; flex-shrink: 0;">
+                                <button class="btn btn-secondary" id="backToMasterBtn" style="display: none;">
+                                    <i class="fas fa-arrow-left"></i> Back
+                                </button>
+                                <button class="btn btn-primary" id="printLedgerBtn">
+                                    <i class="fas fa-print"></i> Print Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Master View: Grouped List -->
+                <div id="ledgerMasterView">
+                    <!-- Print Header (Hidden on screen) -->
+                    <div class="print-only-header">
+                        <h1>PULUPANDAN WATER DISTRICT</h1>
+                        <h2>CUSTOMER DIRECTORY REPORT</h2>
+                        <p class="print-date">Generated on: --/--/----</p>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Account #</th>
+                                    <th>Full Name</th>
+                                    <th>Barangay</th>
+                                    <th>Meter Number</th>
+                                    <th>Type</th>
+                                    <th>Total Balance</th>
+                                    <th class="no-print">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledgerMasterBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2rem; color: #9E9E9E;">Select a
+                                        Barangay or Period to view records.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Detail View: Customer Ledger Card -->
+                <div id="ledgerDetailView" style="display: none;">
+                    <div class="ledger-card-container">
+                        <div class="ledger-card-paper">
+                            <!-- High-Fidelity Header from Image -->
+                            <div class="ledger-top-branding">
+                                <div class="top-acc-line">
+                                    <span>WATER SERVICE NO. <span class="ink-line"
+                                            style="min-width: 150px;"></span></span>
+                                    <span>Account NO. <span id="cardAccountNoTop" class="ink-line"
+                                            style="min-width: 150px;"></span></span>
+                                </div>
+                                <div class="district-main-header">
+                                    <h1>PULUPANDAN WATER DISTRICT</h1>
+                                    <h2>CUSTOMER LEDGER CARD</h2>
+                                </div>
+                            </div>
+
+                            <div id="ledgerBannerContainer" style="display: none;"></div>
+
+                            <div class="ledger-customer-details">
+                                <div class="details-left">
+                                    <div class="details-row stacked">
+                                        <label>Concessioner:</label>
+                                        <span id="cardCustomerName" class="ink-line-data full-width"></span>
+                                    </div>
+                                    <div class="details-row stacked">
+                                        <label>Address:</label>
+                                        <span id="cardAddress" class="ink-line-data full-width"></span>
+                                    </div>
+                                </div>
+                                <div class="details-right">
+                                    <div class="details-row form-inline">
+                                        <label>Installation Fee ₱</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                        <label>Date</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                        <label>O.R. No.</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                    </div>
+                                    <div class="details-row" style="margin-bottom: 0;">
+                                        <label>Guarantee Deposit for Future Water</label>
+                                    </div>
+                                    <div class="details-row form-inline">
+                                        <label>Consumption Paid ₱</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                        <label>Date</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                        <label>O.R. No.</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                    </div>
+                                    <div class="details-row form-inline">
+                                        <label>Date Installed:</label>
+                                        <span class="ink-line" style="width: 120px;"></span>
+                                        <label>Date</label>
+                                        <span class="ink-line" style="width: 120px;"></span>
+                                    </div>
+                                    <div class="details-row form-inline">
+                                        <label>Meter No.</label>
+                                        <span id="cardMeterNo" class="ink-line-data" style="min-width: 150px;"></span>
+                                        <label>Date</label>
+                                        <span class="ink-line" style="width: 120px;"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ledger-card-table-wrapper">
+                                <table class="ledger-card-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Bill Number</th>
+                                            <th>Others (Specify)</th>
+                                            <th>PARTICULARS</th>
+                                            <th>Meter Reading</th>
+                                            <th>Consumption (in Cubic Meters)</th>
+                                            <th>Billings</th>
+                                            <th>Collections and other Credits</th>
+                                            <th>BALANCE</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ledgerCardBody">
+                                        <!-- Rows injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scheduling Page -->
+            <div class="page" id="schedulingPage">
+                <div class="page-header" style="justify-content: flex-end;">
+                    <div class="actions">
+                        <p class="text-light" style="font-size: 0.85rem;">Organize Readers by Area & Barangay</p>
+                    </div>
+                </div>
+
+                <div class="assignments-grid" id="assignmentsGrid">
+                    <!-- Dynamic Boxes will be injected here -->
+                    <button class="add-box-btn" id="openAddBoxModal">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Box</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Reading List Page -->
+            <div class="page" id="readingListPage">
+                <!-- Header removed for simplicity as requested -->
+
+                <div class="filter-bar">
+                    <div class="filter-item" style="flex: 1.5;">
+                        <label>Search</label>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="readingListSearch" placeholder="Name or account ID...">
+                        </div>
+                    </div>
+                    <div class="filter-group" style="flex: 2.5;">
+                        <div class="filter-item" style="flex: 1;">
+                            <label>Reader</label>
+                            <select id="readingListReaderFilter" class="filter-select">
+                                <option value="">All Readers</option>
+                            </select>
+                        </div>
+                        <div class="filter-item" style="flex: 1;">
+                            <label>Period</label>
+                            <select id="readingListPeriodFilter" class="filter-select">
+                                <option value="">All Periods</option>
+                            </select>
+                        </div>
+                        <div class="filter-item" style="flex: 1;">
+                            <label>Barangay</label>
+                            <select id="readingListBarangayFilter" class="filter-select">
+                                <option value="">All Barangays</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-item" style="margin-left: auto;">
+                        <label style="visibility: hidden;">Action</label>
+                        <button class="btn btn-primary" id="printReadingListBtn">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                    </div>
+                </div>
+
+                <div class="reading-list-print-header ledger-top-branding">
+                    <div class="district-main-header">
+                        <h1>PULUPANDAN WATER DISTRICT</h1>
+                        <h2>WATER METER READING LIST</h2>
+                    </div>
+                    <div class="print-info-grid"
+                        style="margin-top: 1.5rem; display: flex; justify-content: space-between; border-top: 1px solid #000; padding-top: 1rem;">
+                        <div class="print-info-col">
+                            <p><strong>Period:</strong> <span id="printPeriodName">--</span></p>
+                        </div>
+                        <div class="print-info-col">
+                            <p><strong>Barangay:</strong> <span id="printBarangayName">--</span></p>
+                        </div>
+                        <div class="print-info-col">
+                            <p><strong>Reader:</strong> <span id="printReaderName">--</span></p>
+                        </div>
+                        <div class="print-info-col">
+                            <p><span id="printReadingListStats" style="font-size: 0.85rem; color: #555;">Generated on:
+                                    --/--/----</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="readingListPrintArea">
+                    <div class="table-container" style="overflow-x: auto;">
+                        <table class="data-table" id="readingListTable" style="min-width: 1000px;">
+                            <thead>
+                                <tr>
+                                    <th id="sortReadingAccount" data-sort-key="id">Acct No <i
+                                            class="fas fa-sort sort-icon"></i></th>
+                                    <th id="sortReadingName" data-sort-key="last_name">Name <i
+                                            class="fas fa-sort sort-icon"></i></th>
+                                    <th style="text-align: right;">Prev</th>
+                                    <th style="text-align: right;">Pres</th>
+                                    <th style="text-align: right;">Usage</th>
+                                    <th>Address</th>
+                                    <th id="sortReadingDate" data-sort-key="updated_at">Date Read <i
+                                            class="fas fa-sort sort-icon"></i></th>
+                                    <th>Meter No</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="readingListTableBody">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; padding: 3rem; color: #9E9E9E;">
+                                        <i class="fas fa-spinner fa-spin"
+                                            style="font-size: 2rem; margin-bottom: 1rem; display: block; opacity: 0.3;"></i>
+                                        Loading readings...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div id="readingListPagination" class="pagination-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Page -->
+
+            <div class="settings-actions" style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem; margin: 1rem 0;">
+                <div id="unsavedMsgTop"
+                    style="display: none; color: #f59e0b; font-size: 0.9rem; font-weight: 600; align-items: center; gap: 0.5rem; margin-right: 0.5rem;">
+                    <i class="fas fa-exclamation-circle"></i> Unsaved changes
+                </div>
+                <button class="btn btn-outline" id="changePINBtn" style="border-radius: 10px; padding: 0.7rem 1.2rem;">
+                    <i class="fas fa-key"></i> Change PIN
+                </button>
+                <button class="btn-premium-confirm" id="saveSettingsBtn"
+                    style="padding: 0.7rem 1.5rem; min-width: 160px; font-weight: 700;">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </div>
+        </div>
+
+        <div class="settings-grid">
+            <!-- Residential Rates Card -->
+            <div class="rate-category-card residential">
+                <div class="rate-card-header">
+                    <div class="rate-icon-wrapper"><i class="fas fa-home"></i></div>
+                    <div class="rate-header-text">
+                        <h3>Residential</h3>
+                        <p class="rate-subtitle">Factor 1.0 - Standard household</p>
+                    </div>
+                    <button class="btn-edit-rate" data-category="residential"><i class="fas fa-edit"></i></button>
+                </div>
+                <div class="minimum-rate-display">
+                    <span class="rate-label">Min (0-10 cu.m.)</span>
+                    <span class="rate-amount" data-rate="residential-minimum">₱260.00</span>
+                </div>
+                <table class="rate-table">
+                    <tbody>
+                        <tr>
+                            <td>11-20</td>
+                            <td class="rate" data-rate="residential-tier1">₱27.25</td>
+                        </tr>
+                        <tr>
+                            <td>21-30</td>
+                            <td class="rate" data-rate="residential-tier2">₱28.75</td>
+                        </tr>
+                        <tr>
+                            <td>31-40</td>
+                            <td class="rate" data-rate="residential-tier3">₱30.75</td>
+                        </tr>
+                        <tr>
+                            <td>41-up</td>
+                            <td class="rate" data-rate="residential-tier4">₱33.25</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Commercial / Industrial Card -->
+            <div class="rate-category-card full-commercial">
+                <div class="rate-card-header">
+                    <div class="rate-icon-wrapper"><i class="fas fa-industry"></i></div>
+                    <div class="rate-header-text">
+                        <h3>Commercial / Industrial</h3>
+                        <p class="rate-subtitle">Factor 2.0 - Large enterprises</p>
+                    </div>
+                    <button class="btn-edit-rate" data-category="full-commercial"><i class="fas fa-edit"></i></button>
+                </div>
+                <div class="minimum-rate-display">
+                    <span class="rate-label">Min (0-10 cu.m.)</span>
+                    <span class="rate-amount" data-rate="full-commercial-minimum">₱520.00</span>
+                </div>
+                <table class="rate-table">
+                    <tbody>
+                        <tr>
+                            <td>11-20</td>
+                            <td class="rate" data-rate="full-commercial-tier1">₱54.50</td>
+                        </tr>
+                        <tr>
+                            <td>21-30</td>
+                            <td class="rate" data-rate="full-commercial-tier2">₱57.50</td>
+                        </tr>
+                        <tr>
+                            <td>31-40</td>
+                            <td class="rate" data-rate="full-commercial-tier3">₱61.50</td>
+                        </tr>
+                        <tr>
+                            <td>41-up</td>
+                            <td class="rate" data-rate="full-commercial-tier4">₱66.50</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Commercial A Card -->
+            <div class="rate-category-card commercial-a">
+                <div class="rate-card-header">
+                    <div class="rate-icon-wrapper"><i class="fas fa-store"></i></div>
+                    <div class="rate-header-text">
+                        <h3>Semi-Commercial A</h3>
+                        <p class="rate-subtitle">Factor 1.75 - Semi-Commercial</p>
+                    </div>
+                    <button class="btn-edit-rate" data-category="commercial-a"><i class="fas fa-edit"></i></button>
+                </div>
+                <div class="minimum-rate-display">
+                    <span class="rate-label">Min (0-10 cu.m.)</span>
+                    <span class="rate-amount" data-rate="commercial-a-minimum">₱455.00</span>
+                </div>
+                <table class="rate-table">
+                    <tbody>
+                        <tr>
+                            <td>11-20</td>
+                            <td class="rate" data-rate="commercial-a-tier1">₱47.69</td>
+                        </tr>
+                        <tr>
+                            <td>21-30</td>
+                            <td class="rate" data-rate="commercial-a-tier2">₱50.31</td>
+                        </tr>
+                        <tr>
+                            <td>31-40</td>
+                            <td class="rate" data-rate="commercial-a-tier3">₱53.81</td>
+                        </tr>
+                        <tr>
+                            <td>41-up</td>
+                            <td class="rate" data-rate="commercial-a-tier4">₱58.19</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Commercial B Card -->
+            <div class="rate-category-card commercial-b">
+                <div class="rate-card-header">
+                    <div class="rate-icon-wrapper"><i class="fas fa-store-alt"></i></div>
+                    <div class="rate-header-text">
+                        <h3>Semi-Commercial B</h3>
+                        <p class="rate-subtitle">Factor 1.50 - Semi-Commercial</p>
+                    </div>
+                    <button class="btn-edit-rate" data-category="commercial-b"><i class="fas fa-edit"></i></button>
+                </div>
+                <div class="minimum-rate-display">
+                    <span class="rate-label">Min (0-10 cu.m.)</span>
+                    <span class="rate-amount" data-rate="commercial-b-minimum">₱390.00</span>
+                </div>
+                <table class="rate-table">
+                    <tbody>
+                        <tr>
+                            <td>11-20</td>
+                            <td class="rate" data-rate="commercial-b-tier1">₱40.88</td>
+                        </tr>
+                        <tr>
+                            <td>21-30</td>
+                            <td class="rate" data-rate="commercial-b-tier2">₱43.12</td>
+                        </tr>
+                        <tr>
+                            <td>31-40</td>
+                            <td class="rate" data-rate="commercial-b-tier3">₱46.12</td>
+                        </tr>
+                        <tr>
+                            <td>41-up</td>
+                            <td class="rate" data-rate="commercial-b-tier4">₱49.88</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Semi-Commercial C Card -->
+            <div class="rate-category-card commercial-c">
+                <div class="rate-card-header">
+                    <div class="rate-icon-wrapper"><i class="fas fa-briefcase"></i></div>
+                    <div class="rate-header-text">
+                        <h3>Semi-Commercial C</h3>
+                        <p class="rate-subtitle">Factor 1.25 - Semi-Commercial</p>
+                    </div>
+                    <button class="btn-edit-rate" data-category="commercial-c"><i class="fas fa-edit"></i></button>
+                </div>
+                <div class="minimum-rate-display">
+                    <span class="rate-label">Min (0-10 cu.m.)</span>
+                    <span class="rate-amount" data-rate="commercial-c-minimum">₱325.00</span>
+                </div>
+                <table class="rate-table">
+                    <tbody>
+                        <tr>
+                            <td>11-20</td>
+                            <td class="rate" data-rate="commercial-c-tier1">₱34.06</td>
+                        </tr>
+                        <tr>
+                            <td>21-30</td>
+                            <td class="rate" data-rate="commercial-c-tier2">₱35.94</td>
+                        </tr>
+                        <tr>
+                            <td>31-40</td>
+                            <td class="rate" data-rate="commercial-c-tier3">₱38.44</td>
+                        </tr>
+                        <tr>
+                            <td>41-up</td>
+                            <td class="rate" data-rate="commercial-c-tier4">₱41.56</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Bulk / Wholesale Card -->
+            <div class="rate-category-card bulk">
+                <div class="rate-card-header">
+                    <div class="rate-icon-wrapper"><i class="fas fa-truck-loading"></i></div>
+                    <div class="rate-header-text">
+                        <h3>Bulk / Wholesale</h3>
+                        <p class="rate-subtitle">Factor 3.0 - Service providers</p>
+                    </div>
+                    <button class="btn-edit-rate" data-category="bulk"><i class="fas fa-edit"></i></button>
+                </div>
+                <div class="minimum-rate-display">
+                    <span class="rate-label">Min (0-10 cu.m.)</span>
+                    <span class="rate-amount" data-rate="bulk-minimum">₱780.00</span>
+                </div>
+                <table class="rate-table">
+                    <tbody>
+                        <tr>
+                            <td>11-20</td>
+                            <td class="rate" data-rate="bulk-tier1">₱81.75</td>
+                        </tr>
+                        <tr>
+                            <td>21-30</td>
+                            <td class="rate" data-rate="bulk-tier2">₱86.25</td>
+                        </tr>
+                        <tr>
+                            <td>31-40</td>
+                            <td class="rate" data-rate="bulk-tier3">₱92.25</td>
+                        </tr>
+                        <tr>
+                            <td>41-up</td>
+                            <td class="rate" data-rate="bulk-tier4">₱99.75</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Global Rules Card (Full Width) -->
+            <div class="stat-card settings-card" id="globalRulesCard"
+                style="grid-column: 1 / -1; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; position: relative; padding: 0;">
+                <!-- Premium Header (Wide) -->
+                <div
+                    style="background: transparent; padding: 2rem 2.5rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <div style="display: flex; align-items: center; gap: 1.25rem;">
+                        <div
+                            style="width: 48px; height: 48px; border-radius: 14px; background: rgba(16, 185, 129, 0.12); display: flex; align-items: center; justify-content: center; color: #10B981; font-size: 1.4rem; box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.1);">
+                            <i class="fas fa-gears"></i>
+                        </div>
+                        <div>
+                            <h3
+                                style="margin: 0; font-size: 1.25rem; font-weight: 700; color: white; letter-spacing: -0.5px;">
+                                Global System Rules</h3>
+                            <p
+                                style="margin: 4px 0 0 0; font-size: 0.85rem; color: var(--text-secondary); opacity: 0.7;">
+                                Configure billing parameters, penalties, and operational grace periods</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content wrapper with horizontal layout -->
+                <div style="padding: 2.5rem 3rem; display: flex; gap: 4rem; justify-content: stretch;">
+
+                    <!-- Section: Financial Policies -->
+                    <div class="settings-sub-section"
+                        style="flex: 1; background: rgba(16, 185, 129, 0.05); padding: 2rem; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.15); display: flex; flex-direction: column; height: 100%;">
+                        <h4
+                            style="margin: 0 0 1.5rem 0; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; color: #10B981; display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-wallet" style="font-size: 1rem;"></i> Financial Policies
+                        </h4>
+                        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                            <div class="premium-setting-row" style="padding: 1rem 0;">
+                                <div class="setting-info">
+                                    <div class="setting-icon discount" style="width: 40px; height: 40px;"><i
+                                            class="fas fa-percent"></i></div>
+                                    <span class="setting-label" style="font-size: 1rem;">Senior/PWD
+                                        Discount</span>
+                                </div>
+                                <div class="setting-input-wrapper" style="padding: 0.5rem 1rem;">
+                                    <input type="number" id="settingDiscount" step="0.01" value="20"
+                                        style="width: 70px; font-size: 1.2rem;">
+                                    <span class="unit" style="font-size: 0.9rem;">%</span>
+                                </div>
+                            </div>
+                            <div class="premium-setting-row" style="padding: 1rem 0;">
+                                <div class="setting-info">
+                                    <div class="setting-icon penalty" style="width: 40px; height: 40px;"><i
+                                            class="fas fa-clock-rotate-left"></i></div>
+                                    <span class="setting-label" style="font-size: 1rem;">Late Penalty
+                                        Charge</span>
+                                </div>
+                                <div class="setting-input-wrapper" style="padding: 0.5rem 1rem;">
+                                    <input type="number" id="settingPenalty" step="0.01" value="10"
+                                        style="width: 70px; font-size: 1.2rem;">
+                                    <span class="unit" style="font-size: 0.9rem;">%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section: Operational Scheduling -->
+                    <div class="settings-sub-section"
+                        style="flex: 1; background: rgba(59, 130, 246, 0.05); padding: 2rem; border-radius: 16px; border: 1px solid rgba(59, 130, 246, 0.15); display: flex; flex-direction: column; height: 100%;">
+                        <h4
+                            style="margin: 0 0 1.5rem 0; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; color: #3B82F6; display: flex; align-items: center; gap: 12px;">
+                            <i class="fas fa-calendar-check" style="font-size: 1rem;"></i> Operational Logic
+                        </h4>
+                        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                            <div class="premium-setting-row" style="padding: 1rem 0;">
+                                <div class="setting-info">
+                                    <div class="setting-icon due" style="width: 40px; height: 40px;"><i
+                                            class="fas fa-calendar-day"></i></div>
+                                    <span class="setting-label" style="font-size: 1rem;">Payment Due
+                                        Period</span>
+                                </div>
+                                <div class="setting-input-wrapper" style="padding: 0.5rem 1rem;">
+                                    <input type="number" id="settingOverdueDays" value="14" min="1"
+                                        style="width: 70px; font-size: 1.2rem;">
+                                    <span class="unit" style="font-size: 0.9rem;">Days</span>
+                                </div>
+                            </div>
+                            <div class="premium-setting-row" style="padding: 1rem 0;">
+                                <div class="setting-info">
+                                    <div class="setting-icon cutoff" style="width: 40px; height: 40px;"><i
+                                            class="fas fa-scissors"></i></div>
+                                    <span class="setting-label" style="font-size: 1rem;">Disconnection
+                                        Grace</span>
+                                </div>
+                                <div class="setting-input-wrapper" style="padding: 0.5rem 1rem;">
+                                    <input type="number" id="settingCutoffGrace" value="3" min="0"
+                                        style="width: 70px; font-size: 1.2rem;">
+                                    <span class="unit" style="font-size: 0.9rem;">Days</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Sync/Pending Indicator (Subtle bottom bar) -->
+                <div id="settingsSyncIndicator"
+                    style="position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--card-accent-1); transform: scaleX(0); transform-origin: left; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0;">
+                </div>
+            </div>
+
+            <!-- Hidden Inputs for Rate Persistence -->
+            <div style="display: none;">
+                <input type="hidden" id="base_rate">
+                <input type="hidden" id="tier1_threshold">
+                <input type="hidden" id="tier1_rate">
+                <input type="hidden" id="tier2_threshold">
+                <input type="hidden" id="tier2_rate">
+                <input type="hidden" id="tier3_rate">
+            </div>
+
+            <!-- Sticky footer for Unsaved Changes -->
+            <!-- Sticky footer removed as buttons moved to top -->
+        </div>
+        </div>
+
+        <!-- Audit Trail Page -->
+        <div class="page" id="logsPage">
+            <div class="filter-bar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="logSearch" placeholder="Search by staff name, details, or ID..."
+                        class="form-control">
+                </div>
+                <div class="filter-group">
+                    <select id="logActionFilter" class="filter-select">
+                        <option value="">All Actions</option>
+                        <option value="CREATE">Create</option>
+                        <option value="UPDATE">Update</option>
+                        <option value="DELETE">Delete</option>
+                        <option value="PAYMENT">Payment</option>
+                        <option value="LOGIN">Login / Auth</option>
+                    </select>
+                    <select id="logModuleFilter" class="filter-select">
+                        <option value="">All Modules</option>
+                        <option value="customer">Customers</option>
+                        <option value="billing">Billing / Payments</option>
+                        <option value="staff">Staff</option>
+                        <option value="system_settings">System Settings</option>
+                    </select>
+                    <div class="date-filter">
+                        <label>From:</label>
+                        <input type="date" id="logDateFrom">
+                    </div>
+                    <div class="date-filter">
+                        <label>To:</label>
+                        <input type="date" id="logDateTo">
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Staff Member</th>
+                            <th>Module</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem; color: #9E9E9E;">Loading audit
+                                logs...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination for Logs -->
+            <div id="logsPagination" class="pagination-container">
+                <!-- Pagination buttons injected here -->
+            </div>
+        </div>
+
+        </div>
+    </main>
+
+
+    <!-- Change Password Modal -->
+    <div class="modal-overlay premium-modal-overlay" id="changePasswordModal" style="display: none;">
+        <div class="ec-modal-card" style="width: 440px;">
+            <!-- Header -->
+            <div class="ec-header-bar">
+                <div class="ec-header-left">
+                    <div class="ec-avatar-circle">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h2 class="ec-title">Security</h2>
+                        <p class="ec-subtitle">Update Access Key</p>
+                    </div>
+                </div>
+                <button class="ec-close-btn" onclick="closeModal('changePasswordModal')" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="ec-body">
+                <p id="changePasswordStaffName"
+                    style="margin-bottom: 1.25rem; font-weight: 700; color: var(--primary); font-size: 1.1rem; text-align: center;">
+                </p>
+
+                <form id="changePasswordForm" onsubmit="handlePasswordChange(event)">
+                    <div class="ec-form-grid">
+                        <div class="ec-field">
+                            <label class="ec-label">New Password</label>
+                            <input class="ec-input" type="password" id="newPassword" required minlength="6"
+                                placeholder="••••••••" />
+                        </div>
+                        <div class="ec-field">
+                            <label class="ec-label">Confirm Password</label>
+                            <input class="ec-input" type="password" id="confirmPassword" required minlength="6"
+                                placeholder="••••••••" />
+                        </div>
+                    </div>
+
+                    <div class="ec-footer">
+                        <button type="button" class="ec-btn-ghost"
+                            onclick="closeModal('changePasswordModal')">Cancel</button>
+                        <button type="submit" class="ec-btn-primary">
+                            <i class="fas fa-key"></i> Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cutoff Confirmation Modal -->
+    <div class="modal-overlay premium-modal-overlay" id="cutoffConfirmModal" style="display: none;">
+        <div class="ec-modal-card" style="width: 440px;">
+            <div class="ec-header-bar" style="background: linear-gradient(135deg, #ef4444, #dc2626); border: none;">
+                <div class="ec-header-left">
+                    <div class="ec-avatar-circle"
+                        style="background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.3);">
+                        <i class="fas fa-power-off"></i>
+                    </div>
+                    <div>
+                        <h2 class="ec-title">Enforce Cutoff?</h2>
+                        <p class="ec-subtitle" style="color: rgba(255,255,255,0.8);">System Action</p>
+                    </div>
+                </div>
+                <button class="ec-close-btn" onclick="closeModal('cutoffConfirmModal')" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="ec-body" style="padding: 2.5rem 2rem; text-align: center;">
+                <p
+                    style="color: var(--ec-text-main); font-size: 1.1rem; line-height: 1.6; margin: 0; font-weight: 500;">
+                    This will immediately deactivate <strong id="cutoffCustomerName"
+                        style="color: var(--primary);"></strong> and notify the meter reader. This action cannot be
+                    undone.
+                </p>
+
+                <div class="ec-footer"
+                    style="padding-top: 2rem; border-top: none; justify-content: center; gap: 1.25rem;">
+                    <button type="button" class="ec-btn-ghost" style="flex: 1; justify-content: center;"
+                        onclick="closeModal('cutoffConfirmModal')">Cancel</button>
+                    <button type="button" class="ec-btn-danger" id="confirmCutoffBtn"
+                        style="flex: 1.2; justify-content: center;" onclick="window.dbOperations.confirmCutoff()">
+                        <i class="fas fa-check"></i> Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals will be added by JavaScript -->
+    <div id="notificationContainer"></div>
+
+    <!-- Edit Reading Modal -->
+    <div class="modal-overlay premium-modal-overlay" id="editReadingModal" style="display: none;">
+        <div class="ec-modal-card" style="width: 460px;">
+
+            <!-- Header -->
+            <div class="ec-header-bar">
+                <div class="ec-header-left">
+                    <div class="ec-avatar-circle">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <div>
+                        <h2 class="ec-title">Correct Reading</h2>
+                        <p class="ec-subtitle">Manual Adjustment</p>
+                    </div>
+                </div>
+                <button class="ec-close-btn" onclick="closeModal('editReadingModal')" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <div class="ec-body">
+                <div style="margin-bottom: 1.5rem; text-align: center;">
+                    <h3 id="editReadingCustomerName"
+                        style="color: var(--ec-text-main); font-size: 1.1rem; margin: 0; font-weight: 700;"></h3>
+                    <p id="editReadingMeterNo"
+                        style="color: var(--ec-text-sub); font-size: 0.85rem; margin: 0.25rem 0 0 0;"></p>
+                </div>
+
+                <form class="premium-form" id="readingEditForm" novalidate>
+                    <input type="hidden" id="editReadingBillingId">
+                    <input type="hidden" id="editReadingCustomerId">
+                    <input type="hidden" id="editReadingPeriod">
+
+                    <div class="ec-form-grid ec-col-2">
+                        <div class="ec-field">
+                            <label class="ec-label">Previous Reading</label>
+                            <input class="ec-input" type="number" id="editReadingPrev" readonly disabled
+                                style="opacity: 0.6;" />
+                        </div>
+                        <div class="ec-field">
+                            <label class="ec-label">Corrected Reading <span class="ec-req">*</span></label>
+                            <input class="ec-input" type="number" id="editReadingCurrent" required placeholder="0" />
+                        </div>
+                    </div>
+
+                    <div
+                        style="background: rgba(var(--primary-rgb), 0.1); border: 1px solid rgba(var(--primary-rgb), 0.2); padding: 1.25rem; border-radius: 12px; margin: 1.5rem 0; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.95rem; color: var(--ec-text-main); font-weight: 500;">Calculated
+                            Consumption:</span>
+                        <span id="editReadingConsumption"
+                            style="font-size: 1.2rem; font-weight: 800; color: var(--primary);">0 cu.m.</span>
+                    </div>
+
+                    <div class="ec-footer" style="padding-top: 1rem; border-top: none;">
+                        <button type="button" class="ec-btn-ghost"
+                            onclick="closeModal('editReadingModal')">Cancel</button>
+                        <button type="button" class="ec-btn-primary" id="saveReadingEditBtn" style="flex: 1.5;">
+                            <i class="fas fa-save"></i> Save Correction
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase & Auth -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase-config.js"></script>
+    <script src="auth-guard.js"></script>
+
+    <script src="../shared/utils.js"></script>
+    <script src="../shared/billing-logic.js"></script>
+    <script src="database.js"></script>
+    <script src="admin-components.js"></script>
+    <script src="admin.js"></script>
+    <!-- Print-Only Billing Summary (Hidden on screen) -->
+    <div id="billingSummaryPrintView" class="print-only-section">
+        <div class="reading-list-print-header"
+            style="margin-bottom: 2rem; border-bottom: 2px solid #333; padding-bottom: 1rem;">
+            <h1 style="text-align: center; margin-bottom: 0.25rem;">PULUPANDAN WATER DISTRICT</h1>
+            <h2 style="text-align: center; margin-bottom: 0.5rem; color: #444;">BILLING SUMMARY REPORT</h2>
+            <div
+                style="display: flex; justify-content: space-between; border-top: 1px solid #eee; padding-top: 10px; font-size: 0.9rem;">
+                <span id="printBillingPeriod">Period: --</span>
+                <span id="printBillingStats">Generated on: --/--/----</span>
+            </div>
+        </div>
+        <div id="billingSummaryPrintContent">
+            <!-- Populated dynamically by admin.js -->
+        </div>
+    </div>
+
+    <!-- Custom Print Footer -->
+    <div class="custom-print-footer">
+        Pulupandan Water District Utility Management System | Official Record
+    </div>
+    <div id="modalContainer"></div>
+</body>
+
+</html>

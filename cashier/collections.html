@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cashier - Pulupandan Water District</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Shared Styles -->
+    <link rel="stylesheet" href="../shared/common.css">
+    <link rel="stylesheet" href="cashier.css">
+    <link rel="icon" type="image/png" href="../assets/logo.png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        body.auth-verified {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Auth Check Script (Runs first) -->
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+        // We need to wait for the main scripts to load, but we can't block everything.
+        // Instead, we rely on staff-auth.js which we will move to head or make blocking.
+        // Actually, easiest way: let staff-auth.js handle the body class.
+    </script>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="water-loader">
+                <div class="drop"></div>
+                <div class="drop"></div>
+                <div class="drop"></div>
+            </div>
+            <div class="loading-text">
+                <h3>PREPARING TERMINAL...</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="../assets/logo.png" alt="PWD Logo" style="width: 40px; height: 40px; object-fit: contain;">
+                <div class="logo-text-container"
+                    style="display: flex; flex-direction: column; line-height: 1.1; margin-left: 8px;">
+                    <span class="logo-text" style="font-size: 0.95rem;">Pulupandan</span>
+                    <span class="logo-subtext" style="font-size: 0.75rem; opacity: 0.8; font-weight: 500;">Water
+                        District</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                    <line x1="9" y1="3" x2="9" y2="21" />
+                </svg>
+            </button>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#dashboard" class="nav-item active" data-page="dashboard">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="3" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" />
+                    <rect x="11" y="3" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" />
+                    <rect x="3" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" />
+                    <rect x="11" y="11" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#customers" class="nav-item" data-page="customers">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="6" r="3" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M4 17C4 13.6863 6.68629 11 10 11C13.3137 11 16 13.6863 16 17" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                <span>Customers</span>
+            </a>
+            <a href="#billing" class="nav-item" data-page="billing">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <rect x="3" y="4" width="14" height="12" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+                    <path d="M3 8H17" stroke="currentColor" stroke-width="1.5" />
+                    <circle cx="6" cy="12" r="0.75" fill="currentColor" />
+                </svg>
+                <span>Billing</span>
+            </a>
+            <a href="#ledger" class="nav-item" data-page="ledger">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 4H16M4 8H16M4 12H16M4 16H10" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                    <rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+                <span>Master Ledger</span>
+            </a>
+            <a href="#records" class="nav-item" data-page="records">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M4 4H16M4 8H16M4 12H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    <rect x="3" y="2" width="14" height="16" rx="2" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+                <span>Records</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="theme-toggle" id="themeToggle" title="Toggle Dark/Light Mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button class="logout-btn" id="logoutBtn">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M7 15H4C3.44772 15 3 14.5523 3 14V4C3 3.44772 3.44772 3 4 3H7" stroke="currentColor"
+                        stroke-width="1.5" stroke-linecap="round" />
+                    <path d="M12 12L15 9M15 9L12 6M15 9H7" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="page-title" id="pageTitle">Cashier Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">C</div>
+                    <div class="user-details">
+                        <span class="user-name" id="userName">Cashier User</span>
+                        <span class="user-role" id="userRole">Cashier</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <!-- Dashboard Page -->
+            <div class="page active" id="dashboardPage">
+                <!-- Bento Grid Layout -->
+                <div class="bento-grid">
+                    <!-- Stats Area (Row 1: 4 cols) -->
+                    <div class="stat-card col-span-1">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Customers</span>
+                            <span class="stat-value" id="statTotalCustomers">0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card col-span-1">
+                        <div class="stat-icon green">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Collected Today</span>
+                            <span class="stat-value" id="statCollectedToday">₱0</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card col-span-1">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Unpaid Bills</span>
+                            <div class="stat-value-group">
+                                <span class="stat-value" id="statUnpaidBills">0</span>
+                                <span class="stat-sub-value" id="statUnpaidAmount">₱0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card col-span-1">
+                        <div class="stat-icon red" style="background: rgba(211, 47, 47, 0.1); color: #d32f2f;">
+                            <i class="fas fa-exclamation-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Overdue Bills</span>
+                            <div class="stat-value-group">
+                                <span class="stat-value" id="statOverdueBills">0</span>
+                                <span class="stat-sub-value" id="statOverdueAmount">₱0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Area (Row 2: 2 cols each) -->
+                    <div class="chart-card glass col-span-2">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Payment Status Distribution</h3>
+                            <span class="chart-subtitle">Current Billing Overview</span>
+                        </div>
+                        <div class="chart-container" style="min-height: 300px;">
+                            <canvas id="paymentStatusChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass col-span-2">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Daily Productivity Analysis</h3>
+                            <span class="chart-subtitle">Collections & Payments (Last 7 Days)</span>
+                        </div>
+                        <div class="chart-container" style="min-height: 300px;">
+                            <canvas id="dailyTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Table (Row 3: Full Width) -->
+                    <div class="recent-section col-span-4"
+                        style="background: var(--bg-white); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+                        <h2 class="section-title" style="margin-bottom: 1.5rem;">RECENT COLLECTIONS</h2>
+                        <div class="table-container">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Amount Paid</th>
+                                        <th>Bill No.</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentCollectionsBody">
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; padding: 2rem; color: #9E9E9E;">No
+                                            collections recorded yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Bento Grid -->
+            </div>
+
+            <!-- Customers Page -->
+            <div class="page" id="customersPage">
+                <!-- Page Header removed to avoid redundancy -->
+
+                <div class="filter-bar">
+                    <div class="filter-row">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="customerSearch" placeholder="Search name, account or meter number..."
+                                class="form-control">
+                        </div>
+                        <div class="filter-group">
+                            <select id="customerStatusFilter" class="filter-select">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                            <select id="customerTypeFilter" class="filter-select">
+                                <option value="">All Types</option>
+                                <option value="residential">Residential</option>
+                                <option value="commercial-a">Commercial A</option>
+                                <option value="commercial-b">Commercial B</option>
+                                <option value="full-commercial">Full Commercial</option>
+                            </select>
+                            <select id="customerBarangayFilter" class="filter-select">
+                                <option value="">All Barangays</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="customerTable">
+                        <thead>
+                            <tr>
+                                <th id="sortAccount" data-sort-key="id">Account Number <i
+                                        class="fas fa-sort sort-icon"></i></th>
+                                <th id="sortName" data-sort-key="last_name">Name <i class="fas fa-sort sort-icon"></i>
+                                </th>
+                                <th>Address</th>
+                                <th>Meter No.</th>
+                                <th>Contact</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem; color: #9E9E9E;">Loading
+                                    registry...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination for Customers -->
+                <div id="customerPagination" class="pagination-container"></div>
+            </div>
+
+            <!-- Billing Center Page -->
+            <div class="page" id="billingPage">
+                <!-- Page Header removed to avoid redundancy -->
+
+                <div class="filter-bar">
+                    <div class="filter-row">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="billingSearch"
+                                placeholder="Search bill no, name, account or meter number..." class="form-control">
+                        </div>
+                        <div class="filter-group">
+                            <select id="billingStatusFilter" class="filter-select">
+                                <option value="">All Status</option>
+                                <option value="paid">Paid</option>
+                                <option value="unpaid">Unpaid</option>
+                                <option value="overdue">Overdue</option>
+                                <option value="cutoff">For Cutoff</option>
+                            </select>
+                            <select id="billingMonthFilter" class="filter-select">
+                                <option value="">All Periods</option>
+                                <!-- Populated dynamically -->
+                            </select>
+                            <select id="billingBarangayFilter" class="filter-select">
+                                <option value="">All Barangays</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Bill No.</th>
+                                <th>Customer</th>
+                                <th>Period</th>
+                                <th>Balance</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billingTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem; color: #9E9E9E;">No billing
+                                    records found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination for Billing -->
+                <div id="billingPagination" class="pagination-container"></div>
+            </div>
+
+            <!-- Collection Log Page -->
+            <div class="page" id="recordsPage">
+                <div class="stats-grid"
+                    style="margin-bottom: 2rem; display: flex; gap: 1.5rem; justify-content: flex-start;">
+                    <div class="stat-card square">
+                        <div class="stat-icon green">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Total Collected</span>
+                            <span class="stat-value" id="logTotalAmount">₱0.00</span>
+                        </div>
+                    </div>
+                    <div class="stat-card square">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-label">Transactions</span>
+                            <span class="stat-value" id="logTotalCount">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-bar">
+                    <!-- Row 1: Search + Quick Filters -->
+                    <div class="filter-row">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="logSearch" placeholder="Search customer or ref..."
+                                class="form-control">
+                        </div>
+                        <div class="quick-filters">
+                            <button class="btn btn-sm btn-outline active" onclick="setQuickDate('all')">All</button>
+                            <button class="btn btn-sm btn-outline" onclick="setQuickDate('today')">Today</button>
+                            <button class="btn btn-sm btn-outline" onclick="setQuickDate('week')">Week</button>
+                        </div>
+                    </div>
+                    <!-- Row 2: Date Range + Barangay -->
+                    <div class="filter-row">
+                        <div class="date-filter">
+                            <label>From:</label>
+                            <input type="date" id="logDateFrom">
+                        </div>
+                        <div class="date-filter">
+                            <label>To:</label>
+                            <input type="date" id="logDateTo">
+                        </div>
+                        <select id="logBarangayFilter" class="filter-select">
+                            <option value="">All Barangays</option>
+                        </select>
+                        <button class="btn btn-sm btn-secondary" onclick="resetRecordsFilters()" title="Clear Filters">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="sortable" onclick="setLogSort('date')">Bill No. <i class="fas fa-sort"></i>
+                                </th>
+                                <th class="sortable" onclick="setLogSort('accountID')">Account <i
+                                        class="fas fa-sort"></i></th>
+                                <th class="sortable" onclick="setLogSort('customerName')">Customer <i
+                                        class="fas fa-sort"></i></th>
+                                <th class="sortable" onclick="setLogSort('amount')">Amount <i class="fas fa-sort"></i>
+                                </th>
+                                <th>Method</th>
+                                <th>Ref No.</th>
+                            </tr>
+                        </thead>
+                        <tbody id="collectionLogBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem; color: #9E9E9E;">Loading
+                                    records...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination for Records -->
+                <div id="logPagination" class="pagination-container"></div>
+            </div>
+
+            <!-- Payments Queue Page -->
+            <div class="page" id="paymentsPage">
+                <!-- Page Header removed to avoid redundancy -->
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Bill No.</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Platform</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsQueueBody">
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem; color: #9E9E9E;">No pending
+                                    online payments to verify.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Master Ledger Page -->
+            <div class="page" id="ledgerPage">
+                <div class="ledger-header">
+                    <div class="ledger-controls">
+                        <div class="filter-bar">
+                            <div class="filter-row">
+                                <div class="search-box">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="ledgerSearch" placeholder="Search customer or account ID...">
+                                </div>
+                                <div class="filter-group">
+                                    <select id="ledgerBarangayFilter" class="filter-select">
+                                        <option value="">All Barangays</option>
+                                        <!-- Populated by JS -->
+                                    </select>
+                                    <select id="ledgerPeriodFilter" class="filter-select">
+                                        <option value="">All Periods</option>
+                                    </select>
+                                </div>
+                                <div class="header-actions">
+                                    <button class="btn btn-secondary" id="backToMasterBtn" style="display: none;">
+                                        <i class="fas fa-arrow-left"></i> Back
+                                    </button>
+                                    <button class="btn btn-primary" id="printLedgerBtn">
+                                        <i class="fas fa-print"></i> Print Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Master View: Grouped List -->
+                <div id="ledgerMasterView">
+                    <!-- Print Header (Hidden on screen) -->
+                    <div class="print-only-header">
+                        <h1>PULUPANDAN WATER DISTRICT</h1>
+                        <h2>CUSTOMER DIRECTORY REPORT</h2>
+                        <p class="print-date">Generated on: --/--/----</p>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Account #</th>
+                                    <th>Full Name</th>
+                                    <th>Barangay</th>
+                                    <th>Meter Number</th>
+                                    <th>Type</th>
+                                    <th>Total Balance</th>
+                                    <th class="no-print">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ledgerMasterBody">
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 2rem; color: #9E9E9E;">Select a
+                                        Barangay or Period to view records.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination for Ledger -->
+                    <div id="ledgerMasterPagination" class="pagination-container"></div>
+                </div>
+
+                <!-- Detail View: Customer Ledger Card -->
+                <div id="ledgerDetailView" style="display: none;">
+                    <div class="ledger-card-container">
+                        <div class="ledger-card-paper">
+                            <!-- High-Fidelity Header from Image -->
+                            <div class="ledger-top-branding">
+                                <div class="top-acc-line">
+                                    <span>WATER SERVICE NO. <span class="ink-line"
+                                            style="min-width: 150px;"></span></span>
+                                    <span>Account NO. <span id="cardAccountNoTop" class="ink-line"
+                                            style="min-width: 150px;"></span></span>
+                                </div>
+                                <div class="district-main-header">
+                                    <h1>PULUPANDAN WATER DISTRICT</h1>
+                                    <h2>CUSTOMER LEDGER CARD</h2>
+                                </div>
+                            </div>
+
+                            <div class="ledger-customer-details">
+                                <div class="details-left">
+                                    <div class="details-row stacked">
+                                        <label>Concessioner:</label>
+                                        <span id="cardCustomerName" class="ink-line-data full-width"></span>
+                                    </div>
+                                    <div class="details-row stacked">
+                                        <label>Address:</label>
+                                        <span id="cardAddress" class="ink-line-data full-width"></span>
+                                    </div>
+                                </div>
+                                <div class="details-right">
+                                    <div class="details-row form-inline">
+                                        <label>Installation Fee ₱</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                        <label>Date</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                        <label>O.R. No.</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                    </div>
+                                    <div class="details-row" style="margin-bottom: 0;">
+                                        <label>Guarantee Deposit for Future Water</label>
+                                    </div>
+                                    <div class="details-row form-inline">
+                                        <label>Consumption Paid ₱</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                        <label>Date</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                        <label>O.R. No.</label>
+                                        <span class="ink-line" style="width: 80px;"></span>
+                                    </div>
+                                    <div class="details-row form-inline">
+                                        <label>Date Installed:</label>
+                                        <span class="ink-line" style="width: 120px;"></span>
+                                        <label>Date</label>
+                                        <span class="ink-line" style="width: 120px;"></span>
+                                    </div>
+                                    <div class="details-row form-inline">
+                                        <label>Meter No.</label>
+                                        <span id="cardMeterNo" class="ink-line-data" style="min-width: 150px;"></span>
+                                        <label>Date</label>
+                                        <span class="ink-line" style="width: 120px;"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ledger-card-table-wrapper">
+                                <table class="ledger-card-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Bill Number</th>
+                                            <th>Others (Specify)</th>
+                                            <th>PARTICULARS</th>
+                                            <th>Meter Reading</th>
+                                            <th>Consumption (in Cubic Meters)</th>
+                                            <th>Billings</th>
+                                            <th>Collections and other Credits</th>
+                                            <th>BALANCE</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ledgerCardBody">
+                                        <!-- Rows injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Custom Print Header & Footer -->
+        <div class="custom-print-header">
+            <h1>PULUPANDAN WATER DISTRICT</h1>
+        </div>
+        <div class="custom-print-footer">
+            <span>Official Records - Pulupandan Water District System</span>
+        </div>
+    </main>
+
+    <!-- Modals Container -->
+    <div id="modalContainer"></div>
+    <div id="notificationContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../supabase-config.js"></script>
+    <script src="../shared/utils.js"></script>
+    <script src="staff-auth.js?v=2"></script>
+    <script src="../admin/database.js"></script>
+    <script src="../shared/billing-logic.js"></script>
+    <script src="cashier-db.js"></script>
+    <script src="../admin/admin-components.js"></script>
+    <script src="cashier-components.js"></script>
+    <script src="cashier.js"></script>
+</body>
+
+</html>

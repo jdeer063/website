@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timezone Diagnostic</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .diagnostic-box {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        h2 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #444;
+        }
+        .label {
+            font-weight: bold;
+            color: #aaa;
+        }
+        .value {
+            color: #4CAF50;
+            font-family: 'Courier New', monospace;
+        }
+        .warning {
+            background: #ff9800;
+            color: #000;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🕐 Timezone Diagnostic Tool</h1>
+    
+    <div class="diagnostic-box">
+        <h2>Browser Information</h2>
+        <div id="browserInfo"></div>
+    </div>
+
+    <div class="diagnostic-box">
+        <h2>Current Time (Multiple Formats)</h2>
+        <div id="timeInfo"></div>
+    </div>
+
+    <div class="diagnostic-box">
+        <h2>Timezone Tests</h2>
+        <div id="timezoneTests"></div>
+    </div>
+
+    <div id="warning"></div>
+
+    <script>
+        // Get browser info
+        const browserInfo = document.getElementById('browserInfo');
+        const now = new Date();
+        
+        browserInfo.innerHTML = `
+            <div class="info-row">
+                <span class="label">Browser Timezone:</span>
+                <span class="value">${Intl.DateTimeFormat().resolvedOptions().timeZone}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Timezone Offset:</span>
+                <span class="value">UTC${now.getTimezoneOffset() > 0 ? '-' : '+'}${Math.abs(now.getTimezoneOffset() / 60)}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Browser Language:</span>
+                <span class="value">${navigator.language}</span>
+            </div>
+        `;
+
+        // Get time info
+        const timeInfo = document.getElementById('timeInfo');
+        timeInfo.innerHTML = `
+            <div class="info-row">
+                <span class="label">new Date():</span>
+                <span class="value">${now.toString()}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">toISOString():</span>
+                <span class="value">${now.toISOString()}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">toLocaleString():</span>
+                <span class="value">${now.toLocaleString()}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">toLocaleString('en-US', {timeZone: 'Asia/Manila'}):</span>
+                <span class="value">${now.toLocaleString('en-US', {timeZone: 'Asia/Manila'})}</span>
+            </div>
+        `;
+
+        // Timezone tests
+        const timezoneTests = document.getElementById('timezoneTests');
+        const phtTime = now.toLocaleString('en-US', {
+            timeZone: 'Asia/Manila',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        
+        const localTime = now.toLocaleString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+
+        timezoneTests.innerHTML = `
+            <div class="info-row">
+                <span class="label">Your Browser's Local Time:</span>
+                <span class="value">${localTime}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Philippines Time (PHT):</span>
+                <span class="value">${phtTime}</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Expected PHT (from system):</span>
+                <span class="value">~7:45 PM</span>
+            </div>
+        `;
+
+        // Check for mismatch
+        const warning = document.getElementById('warning');
+        const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (browserTz !== 'Asia/Manila' && browserTz !== 'Asia/Singapore' && browserTz !== 'Asia/Kuala_Lumpur') {
+            warning.innerHTML = `
+                <div class="warning">
+                    ⚠️ WARNING: Your browser timezone is set to "${browserTz}" instead of "Asia/Manila"!<br>
+                    This is why timestamps are showing the wrong time.<br><br>
+                    <strong>Solution:</strong> Your Windows timezone might be set to a different region. 
+                    Please set it to "(UTC+08:00) Kuala Lumpur, Singapore" or "Manila" in Windows Settings.
+                </div>
+            `;
+        }
+
+        // Log to console
+        console.log('=== TIMEZONE DIAGNOSTIC ===');
+        console.log('Browser Timezone:', browserTz);
+        console.log('Offset:', now.getTimezoneOffset());
+        console.log('Current Time:', now.toString());
+        console.log('ISO String:', now.toISOString());
+        console.log('Local Time:', localTime);
+        console.log('PHT Time:', phtTime);
+    </script>
+</body>
+</html>
