@@ -769,7 +769,7 @@ function initializeTableActions() {
         const editBtn = e.target.closest('.btn-icon[title="Edit"]');
         const deleteBtn = e.target.closest('.btn-icon[title="Delete"]');
         const viewBtn = e.target.closest('.btn-icon[title="View"]'); // Staff/Customer view if any
-        const viewBillBtn = e.target.closest('.btn-icon[title="View Bill"]');
+        const viewBillBtn = e.target.closest('.btn-icon.action-view-bill');
         const ledgerBtn = e.target.closest('.btn-icon[title="View Ledger"]');
         const changePasswordBtn = e.target.closest('.btn-icon.change-password');
 

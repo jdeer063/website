@@ -346,11 +346,13 @@ async function addCustomer(customerData) {
         const newId = newCust?.id;
 
         // 3. --- Notifications ---
-        await supabase.from('notifications').insert({
+        const { error: notifError } = await supabase.from('notifications').insert([{
             type: 'new_customer',
             message: `New Customer Registered: ${customerData.firstName} ${customerData.lastName} (Meter: ${customerData.meterNumber})`,
             customer_id: newId
-        }).catch(err => console.warn('Notification failed:', err));
+        }]);
+        
+        if (notifError) console.warn('Notification failed:', notifError);
 
         // 4. --- Audit Log ---
         const statusLabel = (customerData.status || 'active').toLowerCase() === 'active' ? 'Active' : 'Inactive';
@@ -1094,7 +1096,7 @@ async function loadBilling(filters = {}) {
                 </td>
                 <td class="col-actions">
                     <div class="action-buttons">
-                        <button class="btn-icon" title="${bill.status === 'paid' ? 'View/Print Invoice' : 'Unpaid: Invoice Unavailable'}" ${bill.status === 'paid' ? '' : 'disabled'}>
+                        <button class="btn-icon action-view-bill" title="${bill.status === 'paid' ? 'View/Print Invoice' : 'Unpaid: Invoice Unavailable'}" ${bill.status === 'paid' ? '' : 'disabled'}>
                             <i class="fas fa-file-invoice"></i>
                         </button>
                         <button class="btn-icon" title="View Ledger"><i class="fas fa-book"></i></button>

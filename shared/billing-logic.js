@@ -277,7 +277,7 @@
                             <div class="payment-col">
                                 <div class="payment-row-item">
                                     <label>in payment for: Current</label>
-                                    <span class="ink-line" style="width: 100px;">${(data.baseRate + data.consumptionCharge - data.discountAmount).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                                    <span class="ink-line" style="width: 100px;">${(data.baseRate + data.consumptionCharge).toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                                 </div>
                                 <div class="payment-row-item">
                                     <label>CY Arrears</label>
@@ -298,7 +298,7 @@
                                 <div class="payment-row-item"><label>Materials</label><span class="ink-line" style="width: 100px;"></span></div>
                                 <div class="payment-row-item">
                                     <label>Others</label>
-                                    <span class="ink-line" style="width: 100px; text-align: center;">${customer.has_discount ? 'Senior' : 'None'}</span>
+                                    <span class="ink-line" style="width: 100px; text-align: center; color: var(--primary); font-weight: 600;">${customer.has_discount ? `- ${data.discountAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })} (SC)` : ''}</span>
                                 </div>
                             </div>
                         </div>
